@@ -74,3 +74,8 @@ def US_distance(sensor_id):
     # set obj_detected
 
     return obj_detected
+
+
+# a function to fetch all sensor data
+def get_a_sensors():
+    return
