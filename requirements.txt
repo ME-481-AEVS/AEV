@@ -1,4 +1,4 @@
-# circut-python interpreter for python 
+# circuit-python interpreter for python
 Adafruit-Blinka
 # AHT20 sensor library
 adafruit-circuitpython-ahtx0

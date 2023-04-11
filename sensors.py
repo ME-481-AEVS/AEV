@@ -84,11 +84,27 @@ def US_distance(sensor_id):
 
     return obj_detected
 
-# control the neopixel warning lights 
-def lights(state):
-    if state == "solid": 
-        # fill all pixels yellow
-        pixels.fill((0, 255, 0))
+
+def lights(state: int):
+    """
+    Changes the state of the neopixel warning lights.
+
+    :param int state: The new state of the warning lights:
+        0: off
+        1: solid
+        2: Flashing
+    """
+    match state:
+        case 1:
+            # Fill all pixels yellow
+            pixels.fill((0, 255, 0))
+        case 2:
+            # todo flash lights
+            pass
+        case _:
+            # todo turn off lights
+            pass
+
 
 # a function to fetch all sensor data
 def get_a_sensors():
