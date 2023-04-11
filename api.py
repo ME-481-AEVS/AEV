@@ -12,5 +12,5 @@ import sensors
 
 def u_status_f():
     # get sensor data fromm api.py
-    sensors.get_a_sensors
+    sensors.get_a_sensors()
     return
