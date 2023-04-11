@@ -84,6 +84,7 @@ def US_distance(sensor_id):
 
     return obj_detected
 
+# control the neopixel warning lights 
 def lights(state):
     if state == "solid": 
         # fill all pixels yellow
