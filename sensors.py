@@ -87,7 +87,7 @@ def US_distance(sensor_id):
 
 def lights(state: int):
     """
-    Changes the state of the warning lights.
+    Changes the state of the neopixel warning lights.
 
     :param int state: The new state of the warning lights:
         0: off
