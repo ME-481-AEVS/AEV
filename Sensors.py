@@ -1,10 +1,19 @@
-# AHT20 sensor dependancys and libraries
+# API for communication to the control center via COSMOS
+
+# author: Owen Bramley
+# date modified: 04/10/2023
+# version: 0.1 (alpha)
+
+
 import time
 import board
+import neopixel
 import adafruit_ahtx0
 import adafruit_adxl34x
+# configure neopixel pins
+pixels = neopixel.NeoPixel(board.D18, 30)
 
-# AEV Sensor collection functions
+# AEV sensor data collection functions
 # Author: Owen Bramley
 # March 2023
 
@@ -75,7 +84,12 @@ def US_distance(sensor_id):
 
     return obj_detected
 
+def lights(state):
+    if state == "solid": 
+        # fill all pixels yellow
+        pixels.fill((0, 255, 0))
 
 # a function to fetch all sensor data
 def get_a_sensors():
     return
+

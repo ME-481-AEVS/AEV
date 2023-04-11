@@ -4,3 +4,5 @@ Adafruit-Blinka
 adafruit-circuitpython-ahtx0
 # adxl34 sensor library
 adafruit-circuitpython-adxl34x
+# neopixel library
+adafruit-circuitpython-neopixel

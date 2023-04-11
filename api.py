@@ -1,8 +1,10 @@
 # API for communication to the control center via COSMOS
 
 # author: Owen Bramley
-# date modified: 03/31/2023
+# date modified: 04/10/2023
 # version: 0.1 (alpha)
+
+
 import sensors
 
 # full status update of bot, this includes all data that is relevant to runtime operations
