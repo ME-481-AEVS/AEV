@@ -6,3 +6,5 @@ adafruit-circuitpython-ahtx0
 adafruit-circuitpython-adxl34x
 # neopixel library
 adafruit-circuitpython-neopixel
+# livestreaming library
+python-ffmpeg-video-streaming
