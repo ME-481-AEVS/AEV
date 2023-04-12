@@ -1,6 +1,7 @@
 from flask import Response
 from flask import Flask
 from flask import render_template
+import random
 import time
 import cv2
 
@@ -37,12 +38,14 @@ def generate():
 def video_feed():
     # return the response generated along with the specific media
     # type (mime type)
-    return Response(generate(),
-                    mimetype="multipart/x-mixed-replace; boundary=frame")
+    return Response(generate(), mimetype="multipart/x-mixed-replace; boundary=frame")
 
+@app.get("/telemetry")
+def telemetry():
+    print(random.random())
+    return str(random.random())
 
 # check to see if this is the main thread of execution
 if __name__ == '__main__':
-    app.run(debug=True)
-# release the video stream pointer
-vs.stop()
+    app.run(host='0.0.0.0', debug=True)
+

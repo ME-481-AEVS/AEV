@@ -1,9 +1,24 @@
 <html>
   <head>
-    <title>Pi Video Surveillance</title>
+    <title>Video Stream</title>
   </head>
   <body>
-    <h1>Pi Video Surveillance</h1>
+    <h1>Video Stream</h1>
     <img src="{{ url_for('video_feed') }}">
+    <p id="output"></p>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script>
+        function update(){
+            $.get("/telemetry", function(data){
+                $("#output").html(data)
+            });
+        }
+        update()
+        var intervalId = setInterval(function() {
+            update()
+        }, 1000);
+
+    </script>
   </body>
 </html>
