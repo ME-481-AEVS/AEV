@@ -8,3 +8,7 @@ adafruit-circuitpython-adxl34x
 adafruit-circuitpython-neopixel
 # livestreaming library
 python-ffmpeg-video-streaming
+# mini server
+flask
+# for camera
+opencv-python
