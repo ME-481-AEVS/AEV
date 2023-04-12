@@ -1,10 +1,19 @@
-# AHT20 sensor dependancys and libraries
+# API for communication to the control center via COSMOS
+
+# author: Owen Bramley
+# date modified: 04/10/2023
+# version: 0.1 (alpha)
+
+
 import time
 import board
+import neopixel
 import adafruit_ahtx0
 import adafruit_adxl34x
+# configure neopixel pins
+pixels = neopixel.NeoPixel(board.D18, 30)
 
-# AEV Sensor collection functions
+# AEV sensor data collection functions
 # Author: Owen Bramley
 # March 2023
 
@@ -74,3 +83,30 @@ def US_distance(sensor_id):
     # set obj_detected
 
     return obj_detected
+
+
+def lights(state: int):
+    """
+    Changes the state of the neopixel warning lights.
+
+    :param int state: The new state of the warning lights:
+        0: off
+        1: solid
+        2: Flashing
+    """
+    match state:
+        case 1:
+            # Fill all pixels yellow
+            pixels.fill((0, 255, 0))
+        case 2:
+            # todo flash lights
+            pass
+        case _:
+            # todo turn off lights
+            pass
+
+
+# a function to fetch all sensor data
+def get_a_sensors():
+    return
+
