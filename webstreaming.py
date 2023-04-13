@@ -6,21 +6,8 @@ import time
 import cv2
 
 
-# initialize the video stream and allow the camera sensor to start up
-# camera_0 = cv2.VideoCapture(0)  # have to double-check which camera is which
-
-
-def __gstreamer_pipeline(camera_id, capture_width=1280, capture_height=720, display_width=1280, display_height=720, framerate=30, flip_method=0):
-    return (
-            "nvarguscamerasrc sensor-id=%d ! video/x-raw(memory:NVMM), width=(int)%d, height=(int)%d, format=(string)NV12, framerate=(fraction)%d/1 ! "
-            "nvvidconv flip-method=%d ! video/x-raw, width=(int)%d, height=(int)%d, format=(string)BGRx ! videoconvert ! "
-            "video/x-raw, format=(string)BGR ! appsink max-buffers=1 drop=True"
-            % (camera_id, capture_width, capture_height, framerate, flip_method, display_width, display_height)
-    )
-
-
 def generate(camera):
-    """ Loop over frames from the output stream """
+    """ Loops over frames from the output stream """
     while True:
         success, frame = camera.read()  # read the camera frame
         if not success:
@@ -33,19 +20,28 @@ def generate(camera):
                    frame + b'\r\n')
 
 
+gstring0 = ' v4l2src device=/dev/video0 ! image/jpeg, format=MJPG ! nvv4l2decoder mjpeg=1 ! nvvidconv ! video/x-raw,format=BGRx ! videoconvert ! video/x-raw,format=BGR ! appsink drop=1'
+gstring1 = ' v4l2src device=/dev/video1 ! image/jpeg, format=MJPG ! nvv4l2decoder mjpeg=1 ! nvvidconv ! video/x-raw,format=BGRx ! videoconvert ! video/x-raw,format=BGR ! appsink drop=1'
+
 # initialize a flask object
 app = Flask(__name__)
 
-stream = cv2.VideoCapture(0)
+stream0 = cv2.VideoCapture(gstring0, cv2.CAP_GSTREAMER)
+stream1 = cv2.VideoCapture(gstring1, cv2.CAP_GSTREAMER)
 
 time.sleep(2.0)  # give camera time to start up
 
-print('cam has image : %s' % stream.read()[0])  # True = image captured, False = :(
+print('cam0 has image : %s' % stream0.read()[0])  # True = image captured, False = :(
+print('cam1 has image : %s' % stream1.read()[0])
 
-if not stream.read():
-    stream.open()
-if not stream.isOpened():
-    print('Cannot open camera')
+if not stream0.read():
+    stream0.open()
+if not stream0.isOpened():
+    print('Cannot open camera 0')
+if not stream1.read():
+    stream1.open()
+if not stream1.isOpened():
+    print('Cannot open camera 1')
 
 
 @app.route("/")
@@ -58,22 +54,14 @@ def index():
 def camera0():
     # return the response generated along with the specific media
     # type (mime type)
-    return Response(generate(stream), mimetype="multipart/x-mixed-replace; boundary=frame")
+    return Response(generate(stream0), mimetype="multipart/x-mixed-replace; boundary=frame")
 
 
-"""
 @app.route("/camera1")
 def camera1():
     # return the response generated along with the specific media
     # type (mime type)
-    return Response(generate(camera_1), mimetype="multipart/x-mixed-replace; boundary=frame")
-
-@app.route("/camera2")
-def camera2():
-    # return the response generated along with the specific media
-    # type (mime type)
-    return Response(generate(camera_2), mimetype="multipart/x-mixed-replace; boundary=frame")
-"""
+    return Response(generate(stream1), mimetype="multipart/x-mixed-replace; boundary=frame")
 
 
 @app.get("/telemetry")
@@ -84,4 +72,10 @@ def telemetry():
 
 # check to see if this is the main thread of execution
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0', debug=False)
+
+
+stream0.release()
+stream1.release()
+cv2.destroyAllWindows()
+
