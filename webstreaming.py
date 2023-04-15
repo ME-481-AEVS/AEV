@@ -6,12 +6,15 @@ import time
 import cv2
 
 
+<<<<<<< HEAD
 # initialize the video stream and allow the camera sensor to start up
 # camera_0 = cv2.VideoCapture(0)  # have to double-check which camera is which
 
 
+=======
+>>>>>>> 01da55d2ae4e35696b564efd36674f2821f9b2ad
 def generate(camera):
-    """ Loop over frames from the output stream """
+    """ Loops over frames from the output stream """
     while True:
         success, frame = camera.read()  # read the camera frame
         if not success:
@@ -35,8 +38,13 @@ stream1 = cv2.VideoCapture(gstring1, cv2.CAP_GSTREAMER)
 
 time.sleep(2.0)  # give camera time to start up
 
+<<<<<<< HEAD
 print('cam1 has image : %s' % stream0.read()[0])  # True = image captured, False = :(
 print('cam0 has image : %s' % stream1.read()[0])  # True = image captured, False = :(
+=======
+print('cam0 has image : %s' % stream0.read()[0])  # True = image captured, False = :(
+print('cam1 has image : %s' % stream1.read()[0])
+>>>>>>> 01da55d2ae4e35696b564efd36674f2821f9b2ad
 
 if not stream0.read():
     stream0.open()
