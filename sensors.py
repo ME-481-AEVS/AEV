@@ -1,4 +1,4 @@
-# API for communication to the control center via COSMOS
+# AEV sensor data collection functions
 
 # author: Owen Bramley
 # date modified: 04/10/2023
@@ -7,16 +7,12 @@
 
 import time
 import board
-import neopixel
+import neopixel_spi as neopixel
 import adafruit_ahtx0
 import adafruit_adxl34x
+
 # configure neopixel pins
-pixels = neopixel.NeoPixel(board.D18, 30)
-
-# AEV sensor data collection functions
-# Author: Owen Bramley
-# March 2023
-
+pixels = neopixel.NeoPixel_SPI(board.SPI(), 30)
 
 # EB_temp
 # type: float
@@ -94,16 +90,29 @@ def lights(state: int):
         1: solid
         2: Flashing
     """
-    match state:
-        case 1:
-            # Fill all pixels yellow
+    if state == 1:
+        # Fill all pixels yellow
+        while True:
             pixels.fill((0, 255, 0))
-        case 2:
-            # todo flash lights
-            pass
-        case _:
-            # todo turn off lights
-            pass
+            pixels.show()
+    elif state == 2:
+        # todo flash lights
+        i = 0
+        while i < 5:
+            pixels.fill((0, 255, 0))
+            pixels.show()
+            time.sleep(1)
+
+            # Turn them off.
+            pixels.fill((0,0,0))
+            pixels.show()
+            time.sleep(1)
+            i += 1
+            print('flashin')
+    else:
+        # todo turn off lights
+        pixels.fill(0, 0, 0)
+        pixels.show()	
 
 
 # a function to fetch all sensor data
