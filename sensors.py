@@ -14,6 +14,7 @@ import adafruit_adxl34x
 # configure neopixel pins
 pixels = neopixel.NeoPixel_SPI(board.SPI(), 30)
 
+
 # EB_temp
 # type: float
 # return: temperature reading from the AHT20 board
@@ -45,7 +46,6 @@ def accel_data():
 # type: array
 # return: current coordinatess
 def get_corr():
-
     return
 
 
@@ -53,7 +53,6 @@ def get_corr():
 # type: boolean
 # return: if an object is detected within 1 foot = true else = false
 def US_distance(sensor_id):
-
     # threashold for object detection
     distance_threshold = 2
     obj_detected = True
@@ -90,32 +89,32 @@ def lights(state: int):
         1: solid
         2: Flashing
     """
-    if state == 1:
-        # Fill all pixels yellow
-        while True:
+    match state:
+        case 1:
+            # Fill all pixels yellow
+            print('Turning all pixels on, solid yellow')
             pixels.fill((0, 255, 0))
             pixels.show()
-    elif state == 2:
-        # todo flash lights
-        i = 0
-        while i < 5:
+        case 2:
+            # Flash lights
+            print('Flashing pixels five times, solid yellow')
             pixels.fill((0, 255, 0))
-            pixels.show()
-            time.sleep(1)
 
-            # Turn them off.
-            pixels.fill((0,0,0))
-            pixels.show()
-            time.sleep(1)
-            i += 1
-            print('flashin')
-    else:
-        # todo turn off lights
-        pixels.fill(0, 0, 0)
-        pixels.show()	
+            i = 1
+            while i < 5:
+                pixels.fill((0, 255, 0))
+                pixels.show()
+                time.sleep(1)
+                print(f'Flashing x{i}')
+                pixels.fill((0, 0, 0))
+                time.sleep(1)
+                i += 1
+        case _:
+            # Turn off lights
+            print('Turning all pixels off')
+            pixels.fill((0, 0, 0))
 
 
 # a function to fetch all sensor data
 def get_a_sensors():
     return
-

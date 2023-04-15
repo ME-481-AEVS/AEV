@@ -20,8 +20,9 @@ def generate(camera):
                    frame + b'\r\n')
 
 
-gstring0 = ' v4l2src device=/dev/video0 ! image/jpeg, format=MJPG ! nvv4l2decoder mjpeg=1 ! nvvidconv ! video/x-raw,format=BGRx ! videoconvert ! video/x-raw,format=BGR ! appsink drop=1'
-gstring1 = ' v4l2src device=/dev/video1 ! image/jpeg, format=MJPG ! nvv4l2decoder mjpeg=1 ! nvvidconv ! video/x-raw,format=BGRx ! videoconvert ! video/x-raw,format=BGR ! appsink drop=1'
+gstring0 = " v4l2src device=/dev/video0 io-mode=2 ! image/jpeg ! nvjpegdec ! video/x-raw ! nvvidconv ! videoconvert ! video/x-raw,format=BGR ! appsink drop=1"
+gstring1 = " v4l2src device=/dev/video1 io-mode=2 ! image/jpeg ! nvjpegdec ! video/x-raw ! nvvidconv ! videoconvert ! video/x-raw,format=BGR ! appsink drop=1"
+# gstring1 = ' v4l2src device=/dev/video1 ! image/jpeg, format=MJPG ! nvv4l2decoder mjpeg=1 ! nvvidconv ! videoconvert ! video/x-raw,format=BGR ! appsink drop=1'
 
 # initialize a flask object
 app = Flask(__name__)
