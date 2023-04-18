@@ -7,15 +7,14 @@ import requests
 import cv2
 
 
-gstring0 = " v4l2src device=/dev/video0 io-mode=2 ! image/jpeg ! nvjpegdec ! video/x-raw ! nvvidconv ! videoconvert ! video/x-raw,format=BGR ! appsink drop=1"
-gstring1 = " v4l2src device=/dev/video1 io-mode=2 ! image/jpeg ! nvjpegdec ! video/x-raw ! nvvidconv ! videoconvert ! video/x-raw,format=BGR ! appsink drop=1"
-# gstring1 = ' v4l2src device=/dev/video1 ! image/jpeg, format=MJPG ! nvv4l2decoder mjpeg=1 ! nvvidconv ! videoconvert ! video/x-raw,format=BGR ! appsink drop=1'
-
-# initialize a flask object
+# initialize flask
 app = Flask(__name__)
 
-stream0 = cv2.VideoCapture(gstring0, cv2.CAP_GSTREAMER)
-stream1 = cv2.VideoCapture(gstring1, cv2.CAP_GSTREAMER)
+gstream_source0 = " v4l2src device=/dev/video0 io-mode=2 ! image/jpeg ! nvjpegdec ! video/x-raw ! nvvidconv ! videoconvert ! video/x-raw,format=BGR ! appsink drop=1"
+gstream_source1 = " v4l2src device=/dev/video1 io-mode=2 ! image/jpeg ! nvjpegdec ! video/x-raw ! nvvidconv ! videoconvert ! video/x-raw,format=BGR ! appsink drop=1"
+
+stream0 = cv2.VideoCapture(gstream_source0, cv2.CAP_GSTREAMER)
+stream1 = cv2.VideoCapture(gstream_source1, cv2.CAP_GSTREAMER)
 
 time.sleep(2.0)  # give camera time to start up
 
