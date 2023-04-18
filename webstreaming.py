@@ -1,23 +1,10 @@
 from flask import Response
 from flask import Flask
 from flask import render_template
-import random
+import threading
 import time
+import requests
 import cv2
-
-
-def generate(camera):
-    """ Loops over frames from the output stream """
-    while True:
-        success, frame = camera.read()  # read the camera frame
-        if not success:
-            break
-        else:
-            ret, buffer = cv2.imencode('.jpg', frame)
-            frame = buffer.tobytes()
-            # yield the output frame in the byte format
-            yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' +
-                   frame + b'\r\n')
 
 
 gstring0 = " v4l2src device=/dev/video0 io-mode=2 ! image/jpeg ! nvjpegdec ! video/x-raw ! nvvidconv ! videoconvert ! video/x-raw,format=BGR ! appsink drop=1"
@@ -65,15 +52,51 @@ def camera1():
     return Response(generate(stream1), mimetype="multipart/x-mixed-replace; boundary=frame")
 
 
-@app.get("/telemetry")
-def telemetry():
-    return 'telemetry goes here'
+def run_app():
+    app.run(host='0.0.0.0', debug=False)
+
+
+def post_telemetry():
+    while True:
+        time.sleep(2)
+        telemetry = {
+            "status": 1,
+            "currentOrderId": None,
+            "ipAddress": "0.0.0.0",
+            "batteryLevel": 69,
+            "state": 1,
+            "speed": 2.4,
+            "accelerometer": "1.2, 2.1, 2.8",
+            "boltLock": True,
+            "brakes": True,
+            "cpuTemp": 53.5,
+            "elecBayTemp": 58.1,
+            "gps": 3
+        }
+        res = requests.post('http://localhost:3000/robot/aev1', json=telemetry)
+        print('response from server:', res.text)
+
+
+def generate(camera):
+    """ Loops over frames from the output stream """
+    while True:
+        success, frame = camera.read()  # read the camera frame
+        if not success:
+            break
+        else:
+            ret, buffer = cv2.imencode('.jpg', frame)
+            frame = buffer.tobytes()
+            # yield the output frame in the byte format
+            yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' +
+                   frame + b'\r\n')
 
 
 # check to see if this is the main thread of execution
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=False)
-
+    server_thread = threading.Thread(target=run_app)
+    telemetry_thread = threading.Thread(target=post_telemetry)
+    server_thread.start()
+    telemetry_thread.start()
 
 stream0.release()
 stream1.release()

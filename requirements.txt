@@ -12,3 +12,5 @@ python-ffmpeg-video-streaming
 flask
 # for camera
 opencv-python
+# for api stuff
+requests
