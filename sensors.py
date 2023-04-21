@@ -11,9 +11,7 @@ import neopixel_spi as neopixel
 import adafruit_ahtx0
 import adafruit_adxl34x
 
-# configure neopixel pins
-pixels = neopixel.NeoPixel_SPI(board.SPI(), 54)
-
+pixels = neopixel.NeoPixel_SPI(board.SPI(), 150)
 
 # EB_temp
 # type: float
@@ -105,13 +103,13 @@ def lights(state: int):
             pixels.show()
             time.sleep(1)
             print(f'Flashing x{i}')
-            pixels.fill((0, 0, 0))
+            pixels.fill(0)
             time.sleep(1)
             i += 1
     else:
         # Turn off lights
         print('Turning all pixels off')
-        pixels.fill((0, 0, 0))
+        pixels.fill(0)
 
 
 # a function to fetch all sensor data

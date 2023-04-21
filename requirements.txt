@@ -31,3 +31,5 @@ Pillow
 # sound
 playsound
 
+# motor controls
+Phidget22

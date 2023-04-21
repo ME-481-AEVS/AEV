@@ -1,9 +1,13 @@
 import RPi.GPIO as GPIO
+from playsound import playsound
 
-# GPIO.setup(29, GPIO.OUT)  # down right
-# GPIO.setup(33, GPIO.OUT)  # down left 
-# GPIO.setup(35, GPIO.OUT)  # up left
-# GPIO.setup(40, GPIO.OUT)  # up right
+"""
+PINS:
+  29 - Right side down
+  33 - Left side down
+  35 - Left side up
+  40 - Right side up
+"""
 
 def actuators_up(time_seconds: int):
     """
@@ -20,6 +24,7 @@ def actuators_up(time_seconds: int):
     GPIO.output(40, GPIO.HIGH)
 
     print("Actuators going up")
+    playsound('/media/audio/Door Opening.mp3')
     time.sleep(time_seconds)
 
     GPIO.output(35, GPIO.LOW)
@@ -44,6 +49,7 @@ def actuators_down(time_seconds: int):
     GPIO.output(33, GPIO.HIGH)
 
     print("Actuators going down")
+    playsound('/media/audio/Door Closing.mp3')
     time.sleep(time_seconds)
     
     GPIO.output(29, GPIO.LOW)

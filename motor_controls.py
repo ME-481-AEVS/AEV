@@ -7,7 +7,7 @@ def main():
     bldcMotor0.setHubPort(0)
     
     bldcMotor0.openWaitForAttachment(5000)
-    bldcMotor0.setTargetVelocity(1)
+    bldcMotor0.setTargetVelocity(0.5)
 
     try:
         input('Press Enter to Stop\n')
