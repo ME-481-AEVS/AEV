@@ -1,13 +1,15 @@
 import RPi.GPIO as GPIO
 from playsound import playsound
+import time
 
 """
-PINS:
-  29 - Right side down
-  33 - Left side down
-  35 - Left side up
-  40 - Right side up
+Pins:
+  29: Down right
+  33: Down left
+  35: Up left
+  40: Up right
 """
+
 
 def actuators_up(time_seconds: int):
     """
