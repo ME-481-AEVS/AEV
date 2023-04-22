@@ -3,7 +3,6 @@ from flask import Flask
 from flask import render_template
 import threading
 import time
-import requests
 import cv2
 
 
@@ -43,17 +42,17 @@ def camera0():
     # type (mime type)
     return Response(generate(stream0), mimetype="multipart/x-mixed-replace; boundary=frame")
 
-
 @app.route("/camera1")
 def camera1():
     # return the response generated along with the specific media
     # type (mime type)
     return Response(generate(stream1), mimetype="multipart/x-mixed-replace; boundary=frame")
 
-
 def run_app():
     app.run(host='0.0.0.0', debug=False)
-
+    stream0.release()
+    stream1.release()
+    cv2.destroyAllWindows()
 
 def post_telemetry():
     while True:
@@ -72,8 +71,8 @@ def post_telemetry():
             "elecBayTemp": 58.1,
             "gps": 3
         }
-        res = requests.post('http://localhost:3000/robot/aev1', json=telemetry)
-        print('response from server:', res.text)
+        # res = requests.post('http://localhost:3000/robot/aev1', json=telemetry)
+        # print('response from server:', res.text)
 
 
 def generate(camera):
@@ -93,10 +92,7 @@ def generate(camera):
 # check to see if this is the main thread of execution
 if __name__ == '__main__':
     server_thread = threading.Thread(target=run_app)
-    telemetry_thread = threading.Thread(target=post_telemetry)
+    # telemetry_thread = threading.Thread(target=post_telemetry)
     server_thread.start()
-    telemetry_thread.start()
+    # telemetry_thread.start()
 
-stream0.release()
-stream1.release()
-cv2.destroyAllWindows()

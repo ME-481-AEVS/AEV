@@ -12,7 +12,7 @@ import adafruit_ahtx0
 import adafruit_adxl34x
 
 # configure neopixel pins
-pixels = neopixel.NeoPixel_SPI(board.SPI(), 30)
+pixels = neopixel.NeoPixel_SPI(board.SPI(), 54)
 
 
 # EB_temp
@@ -89,30 +89,29 @@ def lights(state: int):
         1: solid
         2: Flashing
     """
-    match state:
-        case 1:
-            # Fill all pixels yellow
-            print('Turning all pixels on, solid yellow')
+    if state == 1:
+        # Fill all pixels yellow
+        print('Turning all pixels on, solid yellow')
+        pixels.fill((0, 255, 0))
+        pixels.show()
+    elif state == 2:
+        # Flash lights
+        print('Flashing pixels five times, solid yellow')
+        pixels.fill((0, 255, 0))
+
+        i = 1
+        while i < 5:
             pixels.fill((0, 255, 0))
             pixels.show()
-        case 2:
-            # Flash lights
-            print('Flashing pixels five times, solid yellow')
-            pixels.fill((0, 255, 0))
-
-            i = 1
-            while i < 5:
-                pixels.fill((0, 255, 0))
-                pixels.show()
-                time.sleep(1)
-                print(f'Flashing x{i}')
-                pixels.fill((0, 0, 0))
-                time.sleep(1)
-                i += 1
-        case _:
-            # Turn off lights
-            print('Turning all pixels off')
+            time.sleep(1)
+            print(f'Flashing x{i}')
             pixels.fill((0, 0, 0))
+            time.sleep(1)
+            i += 1
+    else:
+        # Turn off lights
+        print('Turning all pixels off')
+        pixels.fill((0, 0, 0))
 
 
 # a function to fetch all sensor data

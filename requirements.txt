@@ -1,16 +1,33 @@
 # circuit-python interpreter for python
 Adafruit-Blinka
+
 # AHT20 sensor library
 adafruit-circuitpython-ahtx0
+
 # adxl34 sensor library
 adafruit-circuitpython-adxl34x
+
 # neopixel library
 adafruit-circuitpython-neopixel
+
+# neopixel spi 
+adafruit-circuitpython-neopixel-spi
+
 # livestreaming library
 python-ffmpeg-video-streaming
+
 # mini server
 flask
+
 # for camera
 opencv-python
+
 # for api stuff
 requests
+
+# GUI
+Pillow
+
+# sound
+playsound
+
