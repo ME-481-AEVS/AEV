@@ -1,10 +1,11 @@
 import cv2
-from flask import Response
+from flask import Response, request
 from flask import Flask
 from flask import render_template
 import threading
 import time
 
+from linear_actuator_controls import actuators_down, actuators_up
 from camera_stream import CameraStream
 
 # initialize flask
@@ -29,6 +30,14 @@ def camera0():
 @app.route('/camera1')
 def camera1():
     return Response(cam1.generate(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+
+@app.post('/control')
+def control():
+    command = request.values.get('command')
+    name = request.values.get('name')
+    print(name)
+    print(command)
 
 
 def run_app():

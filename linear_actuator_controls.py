@@ -1,9 +1,14 @@
 import RPi.GPIO as GPIO
+import time
 
-# GPIO.setup(29, GPIO.OUT)  # down right
-# GPIO.setup(33, GPIO.OUT)  # down left 
-# GPIO.setup(35, GPIO.OUT)  # up left
-# GPIO.setup(40, GPIO.OUT)  # up right
+"""
+Pins:
+  29: Down right
+  33: Down left
+  35: Up left
+  40: Up right
+"""
+
 
 def actuators_up(time_seconds: int):
     """
