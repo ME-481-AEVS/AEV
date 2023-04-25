@@ -4,8 +4,7 @@ import time
 
 def main():
     bldcMotor0 = BLDCMotor()
-    bldcMotor0.setHubPort(0)
-    
+    bldcMotor0.setDeviceSerialNumber(672469)
     bldcMotor0.openWaitForAttachment(5000)
     bldcMotor0.setTargetVelocity(0.5)
 

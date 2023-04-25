@@ -2,11 +2,13 @@ import cv2
 from flask import Response, request
 from flask import Flask
 from flask import render_template
+from datetime import datetime
 import threading
 import time
 
 from linear_actuator_controls import actuators_down, actuators_up
 from camera_stream import CameraStream
+from auth_users import AUTHORIZED_USERS
 
 # initialize flask
 app = Flask(__name__)
@@ -35,9 +37,24 @@ def camera1():
 @app.post('/control')
 def control():
     command = request.values.get('command')
-    name = request.values.get('name')
-    print(name)
-    print(command)
+    name = request.values.get('user')
+    if name in AUTHORIZED_USERS:
+        with open('log/control.log', 'a') as file:
+            file.write(f'%-22s%-12s%-s\n' % (name, command, datetime.now()))
+        if command == 'open':
+            print('RECEIVED REMOTE COMMAND - OPENING DOOR')
+            # actuators_up(10)
+        elif command == 'close')
+            print('RECEIVED REMOTE COMMAND - CLOSING DOOR')
+            # actuators_down(10)
+        else:
+            print('RECEIVED UNRECOGNIZED REMOTE COMMAND')
+    else:
+        with open('log/control.log', 'a') as file:
+            file.write('UNAUTHORIZED USER:\n')
+            file.write(f'%-22s%-12s%-s\tACCESS DENIED\n' % (name, command, datetime.now()))
+        
+    return {'command': command}
 
 
 def run_app():
