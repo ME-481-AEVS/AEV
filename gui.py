@@ -11,7 +11,7 @@ frame = Frame(win, width=1024, height=600)
 frame.pack()
 frame.place(anchor='center', relx=0.5, rely=0.5)
 
-img = Image.open('logo-tri.png')
+img = Image.open('media/images/logo-tri.png')
 resized_image = img.resize((600,600), Image.ANTIALIAS)
 new_image = ImageTk.PhotoImage(resized_image)
 
