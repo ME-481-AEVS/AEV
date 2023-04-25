@@ -44,7 +44,7 @@ def control():
         if command == 'open':
             print('RECEIVED REMOTE COMMAND - OPENING DOOR')
             # actuators_up(10)
-        elif command == 'close')
+        elif command == 'close':
             print('RECEIVED REMOTE COMMAND - CLOSING DOOR')
             # actuators_down(10)
         else:
