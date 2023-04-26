@@ -115,3 +115,5 @@ def lights(state: int):
 # a function to fetch all sensor data
 def get_a_sensors():
     return
+
+lights(1)

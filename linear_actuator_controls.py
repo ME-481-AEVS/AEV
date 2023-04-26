@@ -26,7 +26,7 @@ def actuators_up(time_seconds: int):
     GPIO.output(40, GPIO.HIGH)
 
     print("Actuators going up")
-    playsound('/media/audio/Door Opening.mp3')
+    playsound('media/audio/Door Opening.mp3')
     time.sleep(time_seconds)
 
     GPIO.output(35, GPIO.LOW)
@@ -51,7 +51,7 @@ def actuators_down(time_seconds: int):
     GPIO.output(33, GPIO.HIGH)
 
     print("Actuators going down")
-    playsound('/media/audio/Door Closing.mp3')
+    playsound('media/audio/Door Closing.mp3')
     time.sleep(time_seconds)
     
     GPIO.output(29, GPIO.LOW)

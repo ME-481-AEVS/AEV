@@ -8,7 +8,7 @@ import time
 
 from linear_actuator_controls import actuators_down, actuators_up
 from camera_stream import CameraStream
-from auth_users import AUTHORIZED_USERS
+from env.auth_users import AUTHORIZED_USERS
 
 # initialize flask
 app = Flask(__name__)
@@ -43,10 +43,10 @@ def control():
             file.write(f'%-22s%-12s%-s\n' % (name, command, datetime.now()))
         if command == 'open':
             print('RECEIVED REMOTE COMMAND - OPENING DOOR')
-            # actuators_up(10)
+            actuators_up(12)
         elif command == 'close':
             print('RECEIVED REMOTE COMMAND - CLOSING DOOR')
-            # actuators_down(10)
+            actuators_down(12)
         else:
             print('RECEIVED UNRECOGNIZED REMOTE COMMAND')
     else:
