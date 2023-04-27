@@ -7,6 +7,7 @@ import threading
 import time
 
 from linear_actuator_controls import actuators_down, actuators_up
+from motor_controls import *
 from camera_stream import CameraStream
 from env.auth_users import AUTHORIZED_USERS
 
@@ -32,6 +33,13 @@ def camera0():
 @app.route('/camera1')
 def camera1():
     return Response(cam1.generate(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+
+@app.post('/command_control')
+def command_control():
+    command = request.values.get('command')
+    print(command)
+    return {'command': command}
 
 
 @app.post('/control')

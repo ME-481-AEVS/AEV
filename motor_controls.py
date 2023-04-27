@@ -1,38 +1,50 @@
 from Phidget22.Phidget import *
 from Phidget22.Devices.BLDCMotor import *
-import time
 
-def main():
-    bldcMotorR1 = BLDCMotor()
-    bldcMotorR2 = BLDCMotor()
-    bldcMotorL1 = BLDCMotor()
-    bldcMotorL2 = BLDCMotor()
-    bldcMotorR1.setDeviceSerialNumber(672469)
-    bldcMotorR2.setDeviceSerialNumber(672469)
-    bldcMotorL1.setDeviceSerialNumber(672469)
-    bldcMotorL2.setDeviceSerialNumber(672469)
-    bldcMotorR1.setHubPort(0)
-    bldcMotorR2.setHubPort(3)
-    bldcMotorL1.setHubPort(4)
-    bldcMotorL2.setHubPort(5)
-    bldcMotorR1.openWaitForAttachment(5000)
-    bldcMotorR2.openWaitForAttachment(5000)
-    bldcMotorL1.openWaitForAttachment(5000)
-    bldcMotorL2.openWaitForAttachment(5000)
-    bldcMotorR1.setTargetVelocity(1)
-    bldcMotorR2.setTargetVelocity(1)
-    bldcMotorL1.setTargetVelocity(1)
-    bldcMotorL2.setTargetVelocity(1)
 
-    try:
-        input('Press Enter to Stop\n')
-    except (Exception, KeyboardInterrupt):
-        pass
+class MotorControl:
+    def __init__(self):
+        self.right1 = BLDCMotor()
+        self.right2 = BLDCMotor()
+        self.left1 = BLDCMotor()
+        self.left2 = BLDCMotor()
 
-    bldcMotorR1.close()
-    bldcMotorR2.close()
-    bldcMotorL1.close()
-    bldcMotorL2.close()
+        self.right1.setDeviceSerialNumber(672469)
+        self.right2.setDeviceSerialNumber(672469)
+        self.left1.setDeviceSerialNumber(672469)
+        self.left2.setDeviceSerialNumber(672469)
 
-main()
+        self.right1.setHubPort(0)
+        self.right2.setHubPort(3)
+        self.left1.setHubPort(4)
+        self.left2.setHubPort(5)
 
+        self.right1.openWaitForAttachment(5000)
+        self.right2.openWaitForAttachment(5000)
+        self.left1.openWaitForAttachment(5000)
+        self.left2.openWaitForAttachment(5000)
+
+    def forward(self):
+        self.right1.setTargetVelocity(1)
+        self.right2.setTargetVelocity(1)
+        self.left1.setTargetVelocity(1)
+        self.left2.setTargetVelocity(1)
+
+    def reverse(self):
+        # will this work?
+        self.right1.setTargetVelocity(-1)
+        self.right2.setTargetVelocity(-1)
+        self.left1.setTargetVelocity(-1)
+        self.left2.setTargetVelocity(-1)
+
+    def stop(self):
+        self.right1.setTargetVelocity(0)
+        self.right2.setTargetVelocity(0)
+        self.left1.setTargetVelocity(0)
+        self.left2.setTargetVelocity(0)
+
+    def exit(self):
+        self.right1.close()
+        self.right2.close()
+        self.left1.close()
+        self.left2.close()
