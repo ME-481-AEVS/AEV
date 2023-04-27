@@ -12,14 +12,15 @@ from env.auth_users import AUTHORIZED_USERS
 
 # initialize flask
 app = Flask(__name__)
+app.secret_key = 'aev123hehe'
 CORS(app)
+
+# manual controls
+motor_control = None
 
 # camera streams
 cam0 = CameraStream(0)
 cam1 = CameraStream(1)
-
-# manual controls
-motor_control = None
 
 
 @app.route('/')
@@ -40,21 +41,23 @@ def camera1():
 
 @app.post('/command_center_switch')
 def command_center_switch():
+    global motor_control
     # turns manual controls on/off
-    manual = request.data.decode('UTF-8')
-    if manual:
+    manual = int(request.data.decode('UTF-8'))
+    if manual == 1:
         motor_control = MotorControl()
         print('Manual control turned on')
     else:
-        motor_control.exit()
+        motor_control.exit()
         motor_control = None
         print('Manual control turned off')
-    return 'Manual control turned off' if manual == 0 else 'Manual control turned on'
+    return jsonify(msg='Manual control turned off') if manual == 0 else jsonify(msg='Manual control turned on')
 
     
 @app.post('/command_control')
 def command_control():
-    command = request.data.decode('UTF-8')
+    global motor_control
+    command = int(request.data.decode('UTF-8'))
     if command >= 64:
         # emergency stop
         motor_control.exit()
@@ -67,7 +70,7 @@ def command_control():
         # forward
         # motor_control.forward()
         print('MOVING FORWARD')
-    return command 
+    return jsonify(msg=command)
 
 
 @app.post('/control')
