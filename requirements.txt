@@ -33,3 +33,6 @@ playsound
 
 # motor controls
 Phidget22
+
+# CORS
+flask-cors

@@ -1,7 +1,6 @@
 import cv2
-from flask import Response, request
-from flask import Flask
-from flask import render_template
+from flask import Response, request, Flask, jsonify, render_template
+from flask_cors import CORS
 from datetime import datetime
 import threading
 import time
@@ -13,10 +12,14 @@ from env.auth_users import AUTHORIZED_USERS
 
 # initialize flask
 app = Flask(__name__)
+CORS(app)
 
 # camera streams
 cam0 = CameraStream(0)
 cam1 = CameraStream(1)
+
+# manual controls
+motor_control = None
 
 
 @app.route('/')
@@ -35,11 +38,36 @@ def camera1():
     return Response(cam1.generate(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
+@app.post('/command_center_switch')
+def command_center_switch():
+    # turns manual controls on/off
+    manual = request.data.decode('UTF-8')
+    if manual:
+        motor_control = MotorControl()
+        print('Manual control turned on')
+    else:
+        motor_control.exit()
+        motor_control = None
+        print('Manual control turned off')
+    return 'Manual control turned off' if manual == 0 else 'Manual control turned on'
+
+    
 @app.post('/command_control')
 def command_control():
-    command = request.values.get('command')
-    print(command)
-    return {'command': command}
+    command = request.data.decode('UTF-8')
+    if command >= 64:
+        # emergency stop
+        motor_control.exit()
+        motor_control = None
+        print('EMERGENCY STOP')
+    elif command == 0:
+        motor_control.stop()
+        print('STOPPING')
+    elif command == 8:
+        # forward
+        # motor_control.forward()
+        print('MOVING FORWARD')
+    return command 
 
 
 @app.post('/control')
@@ -67,6 +95,8 @@ def control():
 
 def run_app():
     app.run(host='0.0.0.0', debug=False)
+    if motor_control:
+        motor_control.exit()
     cam0.stream.release()
     cam1.stream.release()
     cv2.destroyAllWindows()
