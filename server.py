@@ -18,6 +18,8 @@ CORS(app)
 # manual controls
 motor_control = None
 
+# todo add heartbeat and kill motor on no response
+
 # camera streams
 cam0 = CameraStream(0)
 cam1 = CameraStream(1)
@@ -58,18 +60,72 @@ def command_center_switch():
 def command_control():
     global motor_control
     command = int(request.data.decode('UTF-8'))
+
+    '''
+    0000 0000
+     ECO WASD
+    E: emergency stop   64
+    C: close door       32
+    O: open door        16
+    W: forward           8
+    A: left              4
+    S: backward          2
+    D: right             1
+    '''
     if command >= 64:
         # emergency stop
         motor_control.exit()
         motor_control = None
         print('EMERGENCY STOP')
-    elif command == 0:
-        motor_control.stop()
-        print('STOPPING')
-    elif command == 8:
+    elif command == 32:
+        # open door
+        print('OPENING DOOR')
+        # actuators_up(12)
+    elif command == 16:
+        # close door
+        print('CLOSING DOOR')
+        # actuators_down(12)
+    elif command >= 8:
         # forward
-        # motor_control.forward()
-        print('MOVING FORWARD')
+        status = 'MOVING FORWARD'
+        if command == 12:
+            # left
+            # motor_control.foward_left()
+            status += ' LEFT'
+        elif command == 9:
+            # right
+            # motor_control.foward_right()
+            status += ' RIGHT'
+        else:
+            # motor_control.foward()
+            pass
+        print(status)
+    elif command == 4:
+        # left
+        # motor_control.left()
+        print('TURNING LEFT')
+    elif command == 1:
+        # right
+        # motor_control.right()
+        print('TURNING RIGHT')
+    elif command >= 2:
+        # backward
+        status = 'MOVING BACKWARD'
+        if command == 6:
+            # left
+            # motor_control.backward_left()
+            status += ' LEFT'
+        elif command == 3:
+            # right
+            # motor_control.backward_right()
+            status += ' RIGHT'
+        else:
+            pass
+            # motor_control.reverse()
+        print(status)
+    else:
+        # motor_control.stop()
+        print('STOPPING')
     return jsonify(msg=command)
 
 

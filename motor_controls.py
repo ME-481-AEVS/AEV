@@ -1,9 +1,13 @@
 from Phidget22.Phidget import *
 from Phidget22.Devices.BLDCMotor import *
+from Phidget22.Devices.Log import *
+from Phidget22.LogLevel import *
 
 
 class MotorControl:
     def __init__(self):
+        Log.enable(LogLevel.PHIDGET_LOG_INFO, "phidgetlog.log")
+
         self.right1 = BLDCMotor()
         self.right2 = BLDCMotor()
         self.left1 = BLDCMotor()
@@ -24,18 +28,22 @@ class MotorControl:
         self.left1.openWaitForAttachment(5000)
         self.left2.openWaitForAttachment(5000)
 
-    def forward(self):
-        self.right1.setTargetVelocity(1)
-        self.right2.setTargetVelocity(1)
-        self.left1.setTargetVelocity(1)
-        self.left2.setTargetVelocity(1)
+        self.right1.setAcceleration(0.5)
+        self.right2.setAcceleration(0.5)
+        self.left1.setAcceleration(0.5)
+        self.left2.setAcceleration(0.5)
 
     def reverse(self):
-        # will this work?
-        self.right1.setTargetVelocity(-1)
-        self.right2.setTargetVelocity(-1)
-        self.left1.setTargetVelocity(-1)
-        self.left2.setTargetVelocity(-1)
+        self.right1.setTargetVelocity(0.5)
+        self.right2.setTargetVelocity(0.5)
+        self.left1.setTargetVelocity(-0.5)
+        self.left2.setTargetVelocity(-0.5)
+
+    def forward(self):
+        self.right1.setTargetVelocity(-0.5)
+        self.right2.setTargetVelocity(-0.5)
+        self.left1.setTargetVelocity(0.5)
+        self.left2.setTargetVelocity(0.5)
 
     def stop(self):
         self.right1.setTargetVelocity(0)
