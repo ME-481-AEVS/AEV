@@ -97,8 +97,7 @@ def command_control():
             # motor_control.foward_right()
             status += ' RIGHT'
         else:
-            # motor_control.foward()
-            pass
+            motor_control.forward()
         print(status)
     elif command == 4:
         # left
@@ -113,18 +112,17 @@ def command_control():
         status = 'MOVING BACKWARD'
         if command == 6:
             # left
-            # motor_control.backward_left()
+            # motor_control.reverse_left()
             status += ' LEFT'
         elif command == 3:
             # right
-            # motor_control.backward_right()
+            # motor_control.reverse_right()
             status += ' RIGHT'
         else:
-            pass
-            # motor_control.reverse()
+            motor_control.reverse()
         print(status)
     else:
-        # motor_control.stop()
+        motor_control.stop()
         print('STOPPING')
     return jsonify(msg=command)
 
