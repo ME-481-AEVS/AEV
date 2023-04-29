@@ -3,12 +3,12 @@ from flask import Response, request, Flask, jsonify, render_template
 from flask_cors import CORS
 from datetime import datetime
 import threading
+import time
 
 from linear_actuator_controls import actuators_down, actuators_up
 from motor_controls import *
 from camera_stream import CameraStream
 from env.auth_users import AUTHORIZED_USERS
-from sensors import *
 
 
 # initialize flask
@@ -55,7 +55,7 @@ def command_center_switch():
         motor_control.exit()
         motor_control = None
         print('Manual control turned off')
-    return jsonify(msg='Manual control turned off') if manual == 0 else jsonify(msg='Manual control turned on')
+    return jsonify(msg='Manual control off') if manual == 0 else jsonify(msg='Manual control on')
 
 
 @app.post('/heartbeat')
@@ -107,7 +107,8 @@ def command_control():
             # motor_control.foward_right()
             status += ' RIGHT'
         else:
-            motor_control.forward()
+            pass
+            # motor_control.forward()
         print(status)
     elif command == 4:
         # left
@@ -129,7 +130,8 @@ def command_control():
             # motor_control.reverse_right()
             status += ' RIGHT'
         else:
-            motor_control.reverse()
+            pass
+            # motor_control.reverse()
         print(status)
     else:
         motor_control.stop()
@@ -172,10 +174,12 @@ def run_app():
 def check_heartbeat():
     global heartbeat_int
     global motor_control
-    local_heartbeat = heartbeat_int
+    local_heartbeat = 0
+    heartbeat_int = 0
     while motor_control:
         time.sleep(1)
-        if local_heartbeat >= heartbeat_int:
+        if local_heartbeat > heartbeat_int:
+            print('Lost contact with control center, turning off motor controls')
             motor_control.exit()
             motor_control = None
             break
