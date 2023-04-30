@@ -36,3 +36,7 @@ Phidget22
 
 # CORS
 flask-cors
+
+# computer vision
+matplotlib
+numpy
