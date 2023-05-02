@@ -18,7 +18,6 @@ CORS(app)
 
 # open/close door with qr code
 scan_qr_code = True
-detector = cv2.QRCodeDetector()
 
 # manual controls
 motor_control = None
@@ -30,13 +29,12 @@ cam1 = CameraStream(1)
 
 
 def qr_code_loop():
+    detector = cv2.QRCodeDetector()
     while True:
         time.sleep(1)  # check for qr code every second
         if cam0.stream_active is False:
-            success, frame = cam0.stream.read()
-            if not success:
-                break
-            data, bbox, _ = detector.detectAndDecode(frame)
+            _, frame = cam0.stream.read()
+            data, _, _ = detector.detectAndDecode(frame)
             if data:
                 print(data)
 
@@ -100,6 +98,8 @@ def command_control():
     '''
     if command >= 64:
         # emergency stop
+        if not motor_control:
+            motor_control = MotorControl()
         motor_control.exit()
         motor_control = None
         print('EMERGENCY STOP')
