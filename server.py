@@ -16,6 +16,10 @@ app = Flask(__name__)
 app.secret_key = 'aev123hehe'
 CORS(app)
 
+# open/close door with qr code
+scan_qr_code = True
+detector = cv2.QRCodeDetector()
+
 # manual controls
 motor_control = None
 heartbeat_int = 0
@@ -23,6 +27,18 @@ heartbeat_int = 0
 # camera streams
 cam0 = CameraStream(0)
 cam1 = CameraStream(1)
+
+
+def qr_code_loop():
+    while True:
+        time.sleep(1)  # check for qr code every second
+        if cam0.stream_active is False:
+            success, frame = cam0.stream.read()
+            if not success:
+                break
+            data, bbox, _ = detector.detectAndDecode(frame)
+            if data:
+                print(data)
 
 
 @app.route('/')
@@ -209,8 +225,10 @@ def post_telemetry():
 
 # check to see if this is the main thread of execution
 if __name__ == '__main__':
+    qr_thread = threading.Thread(target=qr_code_loop)
     server_thread = threading.Thread(target=run_app)
     # telemetry_thread = threading.Thread(target=post_telemetry)
     server_thread.start()
+    qr_thread.start()
     # telemetry_thread.start()
 
