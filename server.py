@@ -4,12 +4,14 @@ from flask_cors import CORS
 from datetime import datetime
 import threading
 import time
+import socket
 
 from controls.linear_actuator_controls import actuators_down, actuators_up
 from controls.motor_controls import *
 from camera_stream import CameraStream
 from env.auth_users import AUTHORIZED_USERS
 
+from telemetry import Telemetry
 
 # initialize flask
 app = Flask(__name__)
@@ -18,6 +20,9 @@ CORS(app)
 
 # open/close door with qr code
 scan_qr_code = True
+
+# telemetry
+telemetry_data = {}
 
 # manual controls
 motor_control = None
@@ -182,6 +187,11 @@ def control():
     return {'command': command}
 
 
+@app.get('/telemetry')
+def telemetry():
+    return telemetry_data
+
+
 def run_app():
     app.run(host='0.0.0.0', debug=False)
     if motor_control:
@@ -206,33 +216,37 @@ def check_heartbeat():
         local_heartbeat += 1
 
 
-def post_telemetry():
+def update_telemetry():
+    global telemetry_data
+    tele = Telemetry()
+
     while True:
-        time.sleep(2)
-        telemetry = {
+        tele.update_all_sensors()
+        tele.print_telemetry()
+        telemetry_data = {
             "status": 1,
             "currentOrderId": None,
-            "ipAddress": "0.0.0.0",
+            "ipAddress": socket.gethostbyname(socket.gethostname()),
             "batteryLevel": 69,
             "state": 1,
             "speed": 2.4,
-            "accelerometer": "1.2, 2.1, 2.8",
+            "accelerometer": tele.accel_data,
+            "lat": tele.lat,
+            "long": tele.long,
             "boltLock": True,
             "brakes": True,
             "cpuTemp": 53.5,
-            "elecBayTemp": 58.1,
-            "gps": 3
+            "elecBayTemp": tele.eb_temp,
         }
-        # res = requests.post('http://localhost:3000/robot/aev1', json=telemetry)
-        # print('response from server:', res.text)
+        time.sleep(2)
 
 
 # check to see if this is the main thread of execution
 if __name__ == '__main__':
     qr_thread = threading.Thread(target=qr_code_loop)
     server_thread = threading.Thread(target=run_app)
-    # telemetry_thread = threading.Thread(target=post_telemetry)
+    telemetry_thread = threading.Thread(target=update_telemetry)
     server_thread.start()
     qr_thread.start()
-    # telemetry_thread.start()
+    telemetry_thread.start()
 

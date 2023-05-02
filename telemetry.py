@@ -12,7 +12,7 @@ import adafruit_gps
 import busio
 
 
-class Sensors:
+class Telemetry:
 
     def __init__(self):
         self.ic2 = board.I2C()
@@ -75,3 +75,6 @@ class Sensors:
         self.update_accel_data()
         self.update_location()
         self.update_us_distance()
+
+    def print_telemetry(self):
+        print(f'EB TEMP:\t{self.eb_temp}\nACCEL:\t{self.accel_data}\nLAT:\t{self.lat}\nLONG:\t{self.long}')
