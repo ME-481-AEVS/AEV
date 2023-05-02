@@ -3,12 +3,13 @@ from flask import Response, request, Flask, jsonify, render_template
 from flask_cors import CORS
 from datetime import datetime
 import threading
-import time
 
 from linear_actuator_controls import actuators_down, actuators_up
 from motor_controls import *
 from camera_stream import CameraStream
 from env.auth_users import AUTHORIZED_USERS
+from sensors import *
+
 
 # initialize flask
 app = Flask(__name__)
@@ -17,8 +18,7 @@ CORS(app)
 
 # manual controls
 motor_control = None
-
-# todo add heartbeat and kill motor on no response
+heartbeat_int = 0
 
 # camera streams
 cam0 = CameraStream(0)
@@ -49,13 +49,23 @@ def command_center_switch():
     if manual == 1:
         motor_control = MotorControl()
         print('Manual control turned on')
+        heartbeat_thread = threading.Thread(target=check_heartbeat)
+        heartbeat_thread.start()
     else:
         motor_control.exit()
         motor_control = None
         print('Manual control turned off')
     return jsonify(msg='Manual control turned off') if manual == 0 else jsonify(msg='Manual control turned on')
 
-    
+
+@app.post('/heartbeat')
+def heartbeat():
+    global heartbeat_int
+    global motor_control
+    heartbeat_int = int(request.data.decode('UTF-8'))
+    return jsonify(motorcontrols=True if motor_control else False)
+
+
 @app.post('/command_control')
 def command_control():
     global motor_control
@@ -157,6 +167,19 @@ def run_app():
     cam0.stream.release()
     cam1.stream.release()
     cv2.destroyAllWindows()
+
+
+def check_heartbeat():
+    global heartbeat_int
+    global motor_control
+    local_heartbeat = heartbeat_int
+    while motor_control:
+        time.sleep(1)
+        if local_heartbeat >= heartbeat_int:
+            motor_control.exit()
+            motor_control = None
+            break
+        local_heartbeat += 1
 
 
 def post_telemetry():
