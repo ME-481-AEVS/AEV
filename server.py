@@ -29,6 +29,10 @@ cam1 = CameraStream(1)
 
 
 def qr_code_loop():
+    """
+    To detect a QR code when the stream is not active. Since we are only using one of the cameras
+    to check for QR codes, this is defined here instead of in camera_stream.py
+    """
     detector = cv2.QRCodeDetector()
     while True:
         time.sleep(1)  # check for qr code every second
