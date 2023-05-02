@@ -1,7 +1,7 @@
 import time
 import cv2
-import jetson.inference
-import jetson.utils
+from jetson_inference import detectNet
+from jetson_utils import videoSource, videoOutput
 
 
 class CameraStream:
@@ -12,15 +12,16 @@ class CameraStream:
 
         :param int video_source_number: The video resource (e.g. to use /dev/video0, video_source_number = 0)
         """
-        source_string = f' v4l2src device=/dev/video{video_source_number} io-mode=2 ! image/jpeg ! nvjpegdec ! video/x-raw ! nvvidconv ! videoconvert ! video/x-raw,format=BGR ! appsink drop=1'
+        source_string = f' v4l2src device=/dev/video100 io-mode=2 ! image/jpeg ! nvjpegdec ! video/x-raw ! nvvidconv ! videoconvert ! video/x-raw,format=BGR ! appsink drop=1'
 
+        self.input = videoSource("/dev/video0")
+        self.output = videoOutput("/dev/video100")
         self.stream = cv2.VideoCapture(source_string, cv2.CAP_GSTREAMER)
         self.detector = cv2.QRCodeDetector()
         self.scan_qr_code = True  # add logic to turn off/on later (only need at pickup/dropoff)
         self.detect_objects = True  # add logic to turn off/on later (don't need if stationary)
         self.stream_active = False
-        self.net = jetson.inference.detectNet("ssd-mobilenet-v2", threshold=0.7)
-        self.display = jetson.utils.glDisplay()
+        self.net = detectNet("ssd-mobilenet-v2", threshold=0.7)
 
         time.sleep(2.0)  # give camera time to start up
 
@@ -42,8 +43,10 @@ class CameraStream:
                 if data:
                     print(data)
             if self.detect_objects:
-                img, width, height = frame.captureRGBA()
-                detections = self.net.Detect(img, width, height)
+                img = self.input.CaptureRGBA()
+                detections = self.net.Detect(img)
+                print("detected {:d} objects in image".format(len(detections)))
+                
             _, buffer = cv2.imencode('.jpg', frame)
             frame = buffer.tobytes()
             # yield the output frame in the byte format
