@@ -5,8 +5,8 @@ from datetime import datetime
 import threading
 import time
 
-from linear_actuator_controls import actuators_down, actuators_up
-from motor_controls import *
+from controls.linear_actuator_controls import actuators_down, actuators_up
+from controls.motor_controls import *
 from camera_stream import CameraStream
 from env.auth_users import AUTHORIZED_USERS
 

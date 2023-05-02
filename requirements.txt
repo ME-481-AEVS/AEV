@@ -7,6 +7,9 @@ adafruit-circuitpython-ahtx0
 # adxl34 sensor library
 adafruit-circuitpython-adxl34x
 
+#gps
+adafruit-circuitpython-gps
+
 # neopixel library
 adafruit-circuitpython-neopixel
 
