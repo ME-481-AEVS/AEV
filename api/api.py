@@ -5,7 +5,7 @@
 # version: 0.1 (alpha)
 
 from os.path import exists
-import sensors
+import telemetry
 import socket
 import json
 import shelve
