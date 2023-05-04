@@ -72,6 +72,8 @@ def command_center_switch():
         heartbeat_thread = threading.Thread(target=check_heartbeat)
         heartbeat_thread.start()
     else:
+        if motor_control is None:
+            motor_control = MotorControl()
         motor_control.exit()
         motor_control = None
         print('Manual control turned off')
@@ -129,8 +131,7 @@ def command_control():
             # motor_control.foward_right()
             status += ' RIGHT'
         else:
-            pass
-            # motor_control.forward()
+            motor_control.forward()
         print(status)
     elif command == 4:
         # left
@@ -152,8 +153,7 @@ def command_control():
             # motor_control.reverse_right()
             status += ' RIGHT'
         else:
-            pass
-            # motor_control.reverse()
+            motor_control.reverse()
         print(status)
     else:
         motor_control.stop()
@@ -190,7 +190,7 @@ def telemetry():
 
 
 def run_app():
-    app.run(host='0.0.0.0', port=8000, debug=False)
+    app.run(host='0.0.0.0', debug=False)
     if motor_control:
         motor_control.exit()
     cam0.stream.release()
