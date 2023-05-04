@@ -28,9 +28,6 @@ telemetry_data = {}
 motor_control = None
 heartbeat_int = 0
 
-# camera streams
-cam0 = CameraStream(0)
-cam1 = CameraStream(1)
 
 
 def qr_code_loop():
@@ -38,6 +35,7 @@ def qr_code_loop():
     To detect a QR code when the stream is not active. Since we are only using one of the cameras
     to check for QR codes, this is defined here instead of in camera_stream.py
     """
+    global cam0
     detector = cv2.QRCodeDetector()
     while True:
         time.sleep(1)  # check for qr code every second
@@ -53,16 +51,15 @@ def index():
     # return the rendered template
     return render_template('index.html')
 
-
+"""
 @app.route('/camera0')
 def camera0():
     return Response(cam0.generate(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-
 @app.route('/camera1')
 def camera1():
     return Response(cam1.generate(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
+"""
 
 @app.post('/command_center_switch')
 def command_center_switch():
@@ -193,7 +190,7 @@ def telemetry():
 
 
 def run_app():
-    app.run(host='0.0.0.0', debug=False)
+    app.run(host='0.0.0.0', port=8000, debug=False)
     if motor_control:
         motor_control.exit()
     cam0.stream.release()
@@ -217,6 +214,7 @@ def check_heartbeat():
 
 
 def update_telemetry():
+    print('\n\n\nTELEMETRY CALL\n\n\n')
     global telemetry_data
     tele = Telemetry()
 
@@ -246,7 +244,10 @@ if __name__ == '__main__':
     qr_thread = threading.Thread(target=qr_code_loop)
     server_thread = threading.Thread(target=run_app)
     telemetry_thread = threading.Thread(target=update_telemetry)
-    server_thread.start()
-    qr_thread.start()
     telemetry_thread.start()
+    server_thread.start()
+    # qr_thread.start()
 
+    # camera streams
+    cam0 = CameraStream(0)
+    # cam1 = CameraStream(1)

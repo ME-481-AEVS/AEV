@@ -20,10 +20,10 @@ class Telemetry:
         self.accel_data = None
         self.lat = None
         self.long = None
-        self.gps = adafruit_gps.GPS(busio.UART(board.TX, board.RX, baudrate=9600, timeout=30), debug=False)
+        # self.gps = adafruit_gps.GPS(busio.UART(board.TX, board.RX, baudrate=9600, timeout=30), debug=False)
 
-        self.gps.send_command(b'PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0')
-        self.gps.send_command(b'PMTK220,1000')
+        # self.gps.send_command(b'PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0')
+        # self.gps.send_command(b'PMTK220,1000')
 
     def update_eb_temp(self):
         # Create sensor object, communicating over the board's default I2C bus
@@ -33,7 +33,7 @@ class Telemetry:
 
     def update_accel_data(self):
         # initialize I2C connection with the ADXL345 board
-        return adafruit_adxl34x.ADXL345(self.ic2).acceleration
+        self.accel_data = adafruit_adxl34x.ADXL345(self.ic2).acceleration
 
     def update_location(self):
         self.gps.update()
@@ -73,8 +73,8 @@ class Telemetry:
     def update_all_sensors(self):
         self.update_eb_temp()
         self.update_accel_data()
-        self.update_location()
-        self.update_us_distance()
+        # self.update_location()
+        # self.update_us_distance()
 
     def print_telemetry(self):
-        print(f'EB TEMP:\t{self.eb_temp}\nACCEL:\t{self.accel_data}\nLAT:\t{self.lat}\nLONG:\t{self.long}')
+        print(f'EB TEMP:\t{self.eb_temp}\nACCEL:\t\t{self.accel_data}\nLAT:\t\t{self.lat}\nLONG:\t\t{self.long}')

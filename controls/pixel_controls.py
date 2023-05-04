@@ -6,7 +6,7 @@ import neopixel_spi as neopixel
 class PixelControls:
 
     def __init__(self):
-        self.pixels = neopixel.NeoPixel_SPI(board.SPI(), 150)
+        self.pixels = neopixel.NeoPixel_SPI(board.SPI(), 6, brightness=0.5)
 
     def lights(self, state: int):
         """
@@ -20,16 +20,16 @@ class PixelControls:
         if state == 1:
             # Fill all pixels yellow
             print('Turning all pixels on, solid yellow')
-            self.pixels.fill((0, 255, 0))
+            self.pixels.fill((255, 191, 0))
             self.pixels.show()
         elif state == 2:
             # Flash lights
             print('Flashing pixels five times, solid yellow')
-            self.pixels.fill((0, 255, 0))
+            self.pixels.fill((255, 191, 0))
 
             i = 1
             while i < 5:
-                self.pixels.fill((0, 255, 0))
+                self.pixels.fill((255, 191, 0))
                 self.pixels.show()
                 time.sleep(1)
                 print(f'Flashing x{i}')

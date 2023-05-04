@@ -12,32 +12,32 @@ class MotorControl:
         self.left2 = BLDCMotor()
 
         self.right1.setDeviceSerialNumber(672469)
-        self.right2.setDeviceSerialNumber(672469)
+        #self.right2.setDeviceSerialNumber(672469)
         self.left1.setDeviceSerialNumber(672469)
         self.left2.setDeviceSerialNumber(672469)
 
         self.right1.setHubPort(0)
-        self.right2.setHubPort(3)
+        #self.right2.setHubPort(3)
         self.left1.setHubPort(4)
         self.left2.setHubPort(5)
         
         self.right1.setChannel(0)
-        self.right2.setChannel(0)
+        #self.right2.setChannel(0)
         self.left1.setChannel(0)
         self.left2.setChannel(0)
 
         self.right1.openWaitForAttachment(5000)
-        self.right2.openWaitForAttachment(5000)
+        #self.right2.openWaitForAttachment(5000)
         self.left1.openWaitForAttachment(5000)
         self.left2.openWaitForAttachment(5000)
 
         self.right1.setStallVelocity(2000)
-        self.right2.setStallVelocity(2000)
+        #self.right2.setStallVelocity(2000)
         self.left1.setStallVelocity(2000)
         self.left2.setStallVelocity(2000)
         
         self.right1.setAcceleration(0.5)
-        self.right2.setAcceleration(0.5)
+        #self.right2.setAcceleration(0.5)
         self.left1.setAcceleration(0.5)
         self.left2.setAcceleration(0.5)
 

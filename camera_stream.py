@@ -6,7 +6,6 @@ import os
 from jetson_inference import detectNet
 from jetson_utils import videoSource, videoOutput
 
-os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = "rtsp_transport;udp"
 
 
 class CameraStream:
@@ -20,9 +19,10 @@ class CameraStream:
         source_string = f' v4l2src device=/dev/video100 io-mode=2 ! image/jpeg ! nvjpegdec ! video/x-raw ! nvvidconv ! videoconvert ! video/x-raw,format=BGR ! appsink drop=1'
 
         self.input = videoSource("/dev/video0")
-        self.output = videoOutput("rtsp://168.105.255.185:5000/camera1")
-        self.stream = cv2.VideoCapture("rtsp://168.105.255.185:5000/camera1", cv2.CAP_FFMPEG)
-        self.detector = cv2.QRCodeDetector()
+        self.output = videoOutput("webrtc://@:8554/output")
+        # self.output = videoOutput("rtsp://@:1234/my_output")
+        # self.stream = cv2.VideoCapture("webrtc://@:8554/camera0", cv2.CAP_FFMPEG)
+        # self.detector = cv2.QRCodeDetector()
         self.scan_qr_code = True  # add logic to turn off/on later (only need at pickup/dropoff)
         self.detect_objects = True  # add logic to turn off/on later (don't need if stationary)
         self.stream_active = False
@@ -33,12 +33,12 @@ class CameraStream:
 
         time.sleep(1)  # give camera time to start up
 
-        print(f'Video {video_source_number} has image : %s' % self.stream.read()[0])
+        # print(f'Video {video_source_number} has image : %s' % self.stream.read()[0])
 
-        if not self.stream.read():
-            self.stream.open()
-        if not self.stream.isOpened():
-            print(f'Cannot open camera {video_source_number}')
+        # if not self.stream.read():
+        #    self.stream.open()
+        #if not self.stream.isOpened():
+        #    print(f'Cannot open camera {video_source_number}')
 
     def generate(self):
         """ Loops over frames from the output stream """
@@ -68,6 +68,7 @@ class CameraStream:
             img = self.input.Capture()
 
             if img is None:
+                print('no image :(')
                 continue
 
             detections = self.net.Detect(img)
