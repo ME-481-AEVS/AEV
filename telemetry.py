@@ -29,11 +29,13 @@ class Telemetry:
         # Create sensor object, communicating over the board's default I2C bus
         sensor = adafruit_ahtx0.AHTx0(self.ic2)
         # update the current temperature of the EB Bay
-        self.eb_temp = sensor.temperature
+        self.eb_temp = round(sensor.temperature, 1)
 
     def update_accel_data(self):
         # initialize I2C connection with the ADXL345 board
-        self.accel_data = adafruit_adxl34x.ADXL345(self.ic2).acceleration
+        data = adafruit_adxl34x.ADXL345(self.ic2).acceleration
+        rounded = (f'{round(data[0], 2):.2f}', f'{round(data[1], 2):.2f}', f'{round(data[2], 2):.2f}')
+        self.accel_data = ', '.join(rounded)
 
     def update_location(self):
         self.gps.update()
@@ -77,4 +79,4 @@ class Telemetry:
         # self.update_us_distance()
 
     def print_telemetry(self):
-        print(f'EB TEMP:\t{self.eb_temp}\nACCEL:\t\t{self.accel_data}\nLAT:\t\t{self.lat}\nLONG:\t\t{self.long}')
+        print(f'EB TEMP: {self.eb_temp} C    ACCEL: {self.accel_data}    LAT/LONG: {self.lat}, {self.long}')
