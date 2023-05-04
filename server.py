@@ -13,13 +13,11 @@ from env.auth_users import AUTHORIZED_USERS
 
 from telemetry import Telemetry
 
+
 # initialize flask
 app = Flask(__name__)
 app.secret_key = 'aev123hehe'
 CORS(app)
-
-# open/close door with qr code
-scan_qr_code = True
 
 # telemetry
 telemetry_data = {}
@@ -29,11 +27,12 @@ motor_control = None
 heartbeat_int = 0
 
 
-
 def qr_code_loop():
     """
     To detect a QR code when the stream is not active. Since we are only using one of the cameras
     to check for QR codes, this is defined here instead of in camera_stream.py
+    
+    TODO not updated to account for new streaming method
     """
     global cam0
     detector = cv2.QRCodeDetector()
@@ -51,15 +50,6 @@ def index():
     # return the rendered template
     return render_template('index.html')
 
-"""
-@app.route('/camera0')
-def camera0():
-    return Response(cam0.generate(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-@app.route('/camera1')
-def camera1():
-    return Response(cam1.generate(), mimetype='multipart/x-mixed-replace; boundary=frame')
-"""
 
 @app.post('/command_center_switch')
 def command_center_switch():
@@ -161,6 +151,7 @@ def command_control():
     return jsonify(msg=command)
 
 
+# todo rename to user_control (will need to update user website as well
 @app.post('/control')
 def control():
     command = request.values.get('command')
@@ -193,9 +184,6 @@ def run_app():
     app.run(host='0.0.0.0', debug=False)
     if motor_control:
         motor_control.exit()
-    cam0.stream.release()
-    cam1.stream.release()
-    cv2.destroyAllWindows()
 
 
 def check_heartbeat():
@@ -207,6 +195,8 @@ def check_heartbeat():
         time.sleep(1)
         if local_heartbeat > heartbeat_int:
             print('Lost contact with control center, turning off motor controls')
+            if motor_control is None:
+                motor_control = MotorControl()
             motor_control.exit()
             motor_control = None
             break
@@ -214,7 +204,6 @@ def check_heartbeat():
 
 
 def update_telemetry():
-    print('\n\n\nTELEMETRY CALL\n\n\n')
     global telemetry_data
     tele = Telemetry()
 
@@ -246,8 +235,7 @@ if __name__ == '__main__':
     telemetry_thread = threading.Thread(target=update_telemetry)
     telemetry_thread.start()
     server_thread.start()
-    # qr_thread.start()
 
     # camera streams
-    cam0 = CameraStream(0)
-    # cam1 = CameraStream(1)
+    camera_back = CameraStream(0, 'back')
+
