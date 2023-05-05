@@ -1,5 +1,5 @@
 import RPi.GPIO as GPIO
-from playsound import playsound
+import vlc
 import time
 
 """
@@ -17,6 +17,8 @@ def actuators_up(time_seconds: int):
 
     :param int time_seconds: The time in seconds the actuators should go up
     """
+    msg = vlc.MediaPlayer('media/audio/door_opening.mp3')
+
     GPIO.setmode(GPIO.BOARD)
 
     GPIO.setup(35, GPIO.OUT)
@@ -26,7 +28,7 @@ def actuators_up(time_seconds: int):
     GPIO.output(40, GPIO.HIGH)
 
     print("Actuators going up")
-    playsound('media/audio/Door Opening.mp3')
+    msg.play()
     time.sleep(time_seconds)
 
     GPIO.output(35, GPIO.LOW)
@@ -51,7 +53,7 @@ def actuators_down(time_seconds: int):
     GPIO.output(33, GPIO.HIGH)
 
     print("Actuators going down")
-    playsound('media/audio/Door Closing.mp3')
+    # playsound('media/audio/Door Closing.mp3')
     time.sleep(time_seconds)
     
     GPIO.output(29, GPIO.LOW)

@@ -6,7 +6,7 @@ import neopixel_spi as neopixel
 class PixelControls:
 
     def __init__(self):
-        self.pixels = neopixel.NeoPixel_SPI(board.SPI(), 6, brightness=0.5)
+        self.pixels = neopixel.NeoPixel_SPI(board.SPI(), 8)
 
     def lights(self, state: int):
         """
