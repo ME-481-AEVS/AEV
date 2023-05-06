@@ -1,8 +1,7 @@
 import cv2
-import RPi.GPIO as GPIO
 import threading
 import time
-import socket
+import RPi.GPIO as GPIO
 import urllib.request
 
 from flask import Response, request, Flask, jsonify, render_template
@@ -12,7 +11,6 @@ from datetime import datetime
 from controls.linear_actuator_controls import actuators_down, actuators_up
 from controls.motor_controls import *
 from camera.camera_stream import CameraStream
-from camera.od_camera_stream import ODCameraStream
 from env.auth_users import AUTHORIZED_USERS
 from telemetry import Telemetry
 
@@ -31,7 +29,7 @@ door_status = 'c'
 motor_control = None
 heartbeat_int = 0
 
-
+"""
 def e_stop():
     print('E-STOP BUTTON STATE CHANGE')
     if GPIO.output(12, 1):
@@ -46,7 +44,7 @@ def sensor_press():
         print('Button pressed, we\'ve been hit!')
     else:
         print('Button unpressed')
-
+"""
 
 def qr_code_loop():
     """
@@ -83,6 +81,11 @@ def index():
 @app.route('/rear')
 def rear():
     return Response(camera_rear.generate(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+
+@app.route('/front')
+def front():
+    return Response(camera_front.generate(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 @app.post('/command_center_switch')
@@ -233,14 +236,6 @@ def telemetry():
     return telemetry_data
 
 
-def run_app():
-    app.run(host='0.0.0.0', debug=False)
-    if motor_control:
-        motor_control.exit()
-    rear_stream.release()
-    cv2.destroyAllWindows()
-
-
 def check_heartbeat():
     global heartbeat_int
     global motor_control
@@ -288,6 +283,14 @@ def update_telemetry():
         time.sleep(2)
 
 
+def run_app():
+    app.run(host='0.0.0.0', debug=False, port=8100, ssl_context=('/home/aev/aev/ssl/server.crt', '/home/aev/aev/ssl/server.key'))
+    if motor_control:
+        motor_control.exit()
+    rear_stream.release()
+    cv2.destroyAllWindows()
+
+
 # check to see if this is the main thread of execution
 if __name__ == '__main__':
     qr_thread = threading.Thread(target=qr_code_loop)
@@ -296,10 +299,12 @@ if __name__ == '__main__':
 
     # camera streams
     camera_rear = CameraStream(0)
-    camera_front1 = ODCameraStream(1, 'front1')
+    camera_front = CameraStream(1)
     #camera_front2 = ODCameraStream(2, 'front2')
 
     telemetry_thread.start()
     qr_thread.start()
     server_thread.start()
 
+    GPIO.setmode(GPIO.BOARD)
+    print(f'\n\n\nGPIO MODE: {GPIO.getmode()}\n\n\n')

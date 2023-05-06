@@ -6,7 +6,7 @@ import neopixel_spi as neopixel
 class PixelControls:
 
     def __init__(self):
-        self.pixels = neopixel.NeoPixel_SPI(board.SPI(), 8)
+        self.pixels = neopixel.NeoPixel_SPI(board.SPI(), 26)
 
     def lights(self, state: int):
         """
@@ -28,7 +28,7 @@ class PixelControls:
             self.pixels.fill((255, 191, 0))
 
             i = 1
-            while i < 5:
+            while i < 10:
                 self.pixels.fill((255, 191, 0))
                 self.pixels.show()
                 time.sleep(1)

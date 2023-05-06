@@ -17,10 +17,10 @@ class ODCameraStream:
         :param int video_source_number: The video resource (e.g. to use /dev/video0, video_source_number = 0)
         :param str position: The position of the camera - e.g. 'front1', 'front2', 'rear'
         """
-        self.input = videoSource(f'/dev/video{video_source_number}')
+        self.input = videoSource(f'/dev/video{video_source_number}', argv=['--input-flip=rotate-180'])
         self.output = videoOutput(f'webrtc://@:8554/{position}')
         self.detect_objects = True  # add logic to turn off/on later (don't need if stationary)
-        self.net = detectNet("ssd-mobilenet-v2", threshold=0.7)
+        self.net = detectNet("ssd-mobilenet-v2", threshold=0.5)
 
         object_detection_thread = threading.Thread(target=self.obj_detect)
         object_detection_thread.start()
