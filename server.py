@@ -284,7 +284,7 @@ def update_telemetry():
 
 
 def run_app():
-    app.run(host='0.0.0.0', debug=False, port=8100, ssl_context=('/home/aev/aev/ssl/server.crt', '/home/aev/aev/ssl/server.key'))
+    app.run(host='0.0.0.0', debug=False, port=443, ssl_context=('/home/aev/aev/ssl/server.crt', '/home/aev/aev/ssl/server.key'))
     if motor_control:
         motor_control.exit()
     rear_stream.release()
