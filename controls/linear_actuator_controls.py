@@ -14,7 +14,6 @@ Pins:
 def actuators_up(time_seconds: int):
     """
     Moves both linear actuators up (pins 35 & 40) for time_seconds.
-
     :param int time_seconds: The time in seconds the actuators should go up
     """
     msg = vlc.MediaPlayer('media/audio/door_opening.mp3')
@@ -41,7 +40,6 @@ def actuators_up(time_seconds: int):
 def actuators_down(time_seconds: int):
     """
     Moves both linear actuators down (pins 29 and 33) for time_seconds.
-
     :param int time_seconds: The time in seconds the actuators should go down
     """
     GPIO.setmode(GPIO.BOARD)
@@ -94,4 +92,3 @@ def test_down():
     GPIO.output(29, GPIO.LOW)
     GPIO.output(33, GPIO.LOW)
     GPIO.cleanup()
-
