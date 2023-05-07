@@ -11,6 +11,9 @@ from datetime import datetime
 from controls.linear_actuator_controls import actuators_down, actuators_up
 from controls.motor_controls import *
 from camera.camera_stream import CameraStream
+# from camera.od_camera_stream import ODCameraStream
+#  TODO the object detection libary was giving us problems on the last day. It was working fine for about a week, then suddenly
+#  started not working at all. ie, the jetson crashes when the server starts and imports the libraries
 from env.auth_users import AUTHORIZED_USERS
 from telemetry import Telemetry
 
@@ -30,6 +33,8 @@ motor_control = None
 heartbeat_int = 0
 
 """
+TODO these were installed too late to program properly. GPIO pins need to be tested (same as in telem and linear actuator files)
+
 def e_stop():
     print('E-STOP BUTTON STATE CHANGE')
     if GPIO.output(12, 1):
