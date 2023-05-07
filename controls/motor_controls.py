@@ -152,7 +152,7 @@ class MotorControl:
             self.left2.setDeviceSerialNumber(672469)
             self.left2.setHubPort(5)
             self.left1.openWaitForAttachment(2000)
-        self.right1.close()
+        # self.right1.close()
         # self.right2.close()
         self.left1.close()
         self.left2.close()

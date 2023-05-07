@@ -144,13 +144,14 @@ def command_control():
     elif command == 32:
         # open door
         print('OPENING DOOR')
-        actuators_up(12)
+        print('not really tho')
+        # actuators_up(12) # need to figure out pins
         time.sleep(12)
         door_status = 'o'
     elif command == 16:
         # close door
         print('CLOSING DOOR')
-        actuators_down(12)
+        # actuators_down(12) # need to figure out pins
         time.sleep(12)
         door_status = 'c'
     elif command >= 8:
@@ -202,7 +203,7 @@ def command_control():
     return jsonify(msg=command)
 
 
-# todo rename to user_control (will need to update user website as well
+# todo rename to user_control (will need to update user website as well)
 @app.post('/control')
 def control():
     global door_status
@@ -213,12 +214,14 @@ def control():
             file.write(f'%-22s%-12s%-s\n' % (name, command, datetime.now()))
         if command == 'open':
             print('RECEIVED REMOTE COMMAND - OPENING DOOR')
-            actuators_up(12)
+            # actuators_up(12)
+            print('not really tho')
             time.sleep(12)
             door_status = 'o'
         elif command == 'close':
             print('RECEIVED REMOTE COMMAND - CLOSING DOOR')
-            actuators_down(12)
+            # actuators_down(12)
+            print('not really tho')
             time.sleep(12)
             door_status = 'c'
         else:
@@ -296,6 +299,7 @@ if __name__ == '__main__':
     qr_thread = threading.Thread(target=qr_code_loop)
     server_thread = threading.Thread(target=run_app)
     telemetry_thread = threading.Thread(target=update_telemetry)
+    print(f'\n\n\nGPIO MODE: {GPIO.getmode()}\n\n\n')
 
     # camera streams
     camera_rear = CameraStream(0)

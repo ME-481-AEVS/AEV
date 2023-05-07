@@ -3,6 +3,9 @@ import vlc
 import time
 
 """
+TODO - in telemetry.py, we set the GPIO mode to TEGRA_SOC. this class should use the same GPIO mode, as 
+only one mode is allowed to be set at a time. TEGRA_SOC pin numbering as BCM, but need to double-check
+
 Pins:
   29: Down right
   33: Down left

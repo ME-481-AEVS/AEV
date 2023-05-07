@@ -5,11 +5,13 @@
 # version: 0.1 (alpha)
 
 
-import board
+import board  # this sets the GPIO mode to TEGRA_SOC - pin nums should be the same as BCM, but need to double-check
 import adafruit_ahtx0
 import adafruit_adxl34x
 import adafruit_gps
 import busio
+
+import RPi.GPIO as GPIO
 
 
 class Telemetry:
@@ -20,6 +22,7 @@ class Telemetry:
         self.accel_data = None
         self.lat = None
         self.long = None
+
         # self.gps = adafruit_gps.GPS(busio.UART(board.TX, board.RX, baudrate=9600, timeout=30), debug=False)
 
         # self.gps.send_command(b'PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0')
