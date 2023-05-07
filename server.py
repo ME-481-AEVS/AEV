@@ -120,6 +120,7 @@ def heartbeat():
     return jsonify(motorcontrols=True if motor_control else False)
 
 
+# TODO this should be restricted to a specific IP, ie the IP of the computer/server running the control center
 @app.post('/command_control')
 def command_control():
     global motor_control
