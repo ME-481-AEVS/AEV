@@ -1,7 +1,10 @@
 from flask import Blueprint, render_template, Response
 
+from camera.camera_stream import CameraStream
+
 
 main = Blueprint('main', __name__)
+rear_camera = CameraStream(2)
 
 
 @main.get('/')

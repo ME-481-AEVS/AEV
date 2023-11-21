@@ -6,10 +6,13 @@
 
 import serial
 import time
-from const import * # import constants from the const.py file
+from .const import * # import constants from the const.py file
 
 BAUDRATE = ARDUINO_BAUDRATE
 PORT = ARDUINO_PORT
+
+print(BAUDRATE)
+print(PORT)
 LOGFILE = "logs/datalog"+str(time.time())+".txt"
 
 try:
@@ -34,8 +37,8 @@ def sendCommand(command = '0', log = False):
             file = open(LOGFILE, "a")
             file.write(serialcomm.readline().decode('ascii'))
         print(serialcomm.readline().decode('ascii'))
-        serialcomm.close() # close the serial port
     except:
         file = open(LOGFILE, "a")
         file.write("Error") # caught errors added to log
+        serialcomm.close() # close the serial port
 

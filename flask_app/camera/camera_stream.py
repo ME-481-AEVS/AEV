@@ -8,13 +8,12 @@ class CameraStream:
         :param int video_source_number: The video resource (e.g. to use /dev/video0, video_source_number = 0)
         """
         # 3d camera res 2560x960
-        source_string = 'v4l2src device=/dev/video0 io-mode=2 ! image/jpeg,format=MJPG,width=2560,height=960,framerate=30/1 ! nvv4l2decoder mjpeg=1 ! nvvidconv ! video/x-raw,format=BGRx ! appsink drop=1'
-        source_string = 'v4l2src device=/dev/video0 io-mode=2 ! video/x-raw,format=MJPG,width=2560,height=960,framerate=30/1 ! nvvidconv ! video/x-raw(memory:NVMM) ! nvvidconv ! video/x-raw, format=BGRx ! appsink drop=1'
-        source_string = 'nvarguscamerasrc ! video/x-raw(memory:NVMM),format=NV12,width=2560,height=960,framerate=30/1 ! nvvidconv ! video/x-raw,format=BGRx ! appsink drop=1'
+        GSTREAMER_PIPELINE = 'nvarguscamerasrc ! video/x-raw(memory:NVMM), width=3280, height=2464, format=(string)NV12, framerate=21/1 ! nvvidconv flip-method=0 ! video/x-raw, width=960, height=616, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink wait-on-eos=false max-buffers=1 drop=True'
+
+        source_string = f'v4l2src device=/dev/video{video_source_number} ! video/x-raw(memory:NVMM), width=3280, height=2464, format=(string)NV12, framerate=21/1 ! nvvidconv flip-method=0 ! video/x-raw, width=960, height=616, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink wait-on-eos=false max-buffers=1 drop=True'
         print(source_string)
-        #self.stream = cv2.VideoCapture(source_string, cv2.CAP_GSTREAMER)
-        self.stream = cv2.VideoCapture("/dev/video0")
-        # self.stream = cv2.VideoCapture(video_source_number)
+        self.stream = cv2.VideoCapture(GSTREAMER_PIPELINE, cv2.CAP_GSTREAMER)
+        # self.stream = cv2.VideoCapture(2)
         if not self.stream.isOpened():
             print(f'Cannot open camera {video_source_number}')
 
