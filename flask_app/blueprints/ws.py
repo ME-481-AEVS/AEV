@@ -54,10 +54,11 @@ def control(ws):
     S: backward          2
     D: right             1
     """
-    _thread = threading.Thread(target=send_telemetry, args=(ws, True))
-    _thread.daemon = True
-    _thread.start()
+    #_thread = threading.Thread(target=send_telemetry, args=(ws, True))
+    #_thread.daemon = True
+    #_thread.start()
     while ws.connected:
+        print(ard_comm.serial_comm.readline().decode('ascii'))
         data = json.loads(ws.receive())
         print(data)
         command = 0
