@@ -359,10 +359,10 @@ void processReceivedData() {
             Serial.println("Received <b1>. Performing specific action...");
             // Perform your desired action here
           }
+        } else {
+          Serial.println(recievedBytes);
+          Serial.println("uhhhh");
         } 
-          // If the received data is "<b1>"
-          Serial.println("Received <b1>. Performing specific action...");
-          // Perform your desired action here
       } else {
           Serial.println("<ERROR>");
       }
