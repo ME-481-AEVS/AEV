@@ -11,7 +11,7 @@ class CameraStream:
         GSTREAMER_PIPELINE = 'nvarguscamerasrc ! video/x-raw(memory:NVMM), width=3280, height=2464, format=(string)NV12, framerate=21/1 ! nvvidconv flip-method=0 ! video/x-raw, width=960, height=616, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink wait-on-eos=false max-buffers=1 drop=True'
 
         source_string = f'v4l2src device=/dev/video{video_source_number} ! video/x-raw(memory:NVMM), width=3280, height=2464, format=(string)NV12, framerate=21/1 ! nvvidconv flip-method=0 ! video/x-raw, width=960, height=616, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink wait-on-eos=false max-buffers=1 drop=True'
-        print(source_string)
+        GSTREAMER_PIPELINE = f' v4l2src device=/dev/video{video_source_number} io-mode=2 ! image/jpeg ! nvjpegdec ! video/x-raw ! nvvidconv ! videoconvert ! video/x-raw,format=BGR ! appsink drop=1'
         self.stream = cv2.VideoCapture(GSTREAMER_PIPELINE, cv2.CAP_GSTREAMER)
         # self.stream = cv2.VideoCapture(2)
         if not self.stream.isOpened():

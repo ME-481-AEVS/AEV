@@ -197,7 +197,12 @@ String getAccel() {
 
 // Get temperature data
 float getTemp() {
-    return tempSensor.getTemperature();
+    sensors_event_t temp;
+    tempSensorPointer->getEvent(&temp);
+
+    //delay(200);
+    //return temperature in degrees C
+    return temp.temperature;
 }
 
 // Turn brakes on/off
