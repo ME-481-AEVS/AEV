@@ -17,7 +17,7 @@ def create_app():
     from .ws import sock
     sock.init_app(app)
 
-    # app.run(host='0.0.0.0', debug=True, port=443, ssl_context=('/home/aev/aev/ssl/server.crt', '/home/aev/aev/ssl/server.key'))
+    # app.run(host='0.0.0.0', debug=True)
 
     return app
 
