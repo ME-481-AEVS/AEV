@@ -1,24 +1,46 @@
 import json
 import time
+import threading
 
 from flask_sock import Sock
+from simple_websocket import ConnectionClosed
 
 from aev import AEV
 
 
 sock = Sock()
 aev = AEV()
+client_list = []
+
+
+def send_telemetry(ws: Sock, controls: bool):
+    """
+    Sends telemetry data from the AEV to the websocket connection. Acts as a
+    heartbeat for the controls ws, when no longer connected stops all movement
+    on the AEV
+    """
+    while True:
+        time.sleep(1 if controls else 2)
+        aev.update_telemetry()
+        print(aev.telemetry)
+        try:
+            ws.send(aev.telemetry)
+        except ConnectionClosed:
+            if controls:
+                # stop all movement on aev
+                print('WS DISCONNECTED - STOPPING ALL MOVEMENT')
+            break
 
 
 @sock.route('/telemetry')
 def echo(ws):
-    data = ws.receive()
-    print(data)
+    _thread = threading.Thread(target=send_telemetry, args=(ws, False))
+    _thread.daemon = True
+    _thread.start()
     while True:
-        aev.update_telemetry()
-        ws.send(aev.telemetry)
-        print('sending telemetry')
-        time.sleep(2)
+        data = ws.receive()
+        print(data)
+
 
 
 @sock.route('/control')
@@ -34,7 +56,10 @@ def control(ws):
     S: backward          2
     D: right             1
     """
-    while True:
+    _thread = threading.Thread(target=send_telemetry, args=(ws, True))
+    _thread.daemon = True
+    _thread.start()
+    while ws.connected:
         data = json.loads(ws.receive())
         print(data)
         command = 0
