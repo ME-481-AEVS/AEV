@@ -259,7 +259,7 @@ void setMotorSpeed(int motor, int speed) {
 
 
 
-void loop() {
+void getTelem() {
   getGPS(&GPS_sat, &GPS_lon, &GPS_fix, &GPS_fixq);
   if (GPS_fix == 0){
     Serial.print("no GPS fix");
@@ -271,16 +271,10 @@ void loop() {
   Serial.println();
   Serial.println(getAccel());
   Serial.println(getTemp());
-  brake();
   ultraSonicDistance();
 }
 
-//Function to move Linear Actuators up and down
-const int LinearActuator_UP1 = 27;
-const int LinearActuator_DOWN1 = 29;
-const int LinearActuator_UP2 = 31;
-const int LinearActuator_DOWN2 = 33;
-
+/*
 void loop(){
     delay(10000);
     //Extend
@@ -296,7 +290,7 @@ void loop(){
     digitalWrite(LinearActuator_DOWN2, LOW);
     delay(10000);
 }
-
+*/
 
 // Jetson <-> Arduino communication FROM: https://forum.arduino.cc/t/serial-input-basics-updated/382007/3 (example 6 modified)
 
@@ -305,6 +299,11 @@ byte receivedBytes[numBytes];
 byte numReceived = 0;
 
 boolean newData = false;
+
+
+
+// ONE LOOP TO RULE THEM ALL
+
 
 void loop() {
     // contant communication
@@ -341,7 +340,7 @@ void recvBytesWithStartEndMarkers() {
             }
             // Check if rb is the byte 0x4C (L)
             if (rb == 0x4C) {
-                brake(); // Call the function brake if byte 0x4C is received
+                brake(1); // Call the function brake if byte 0x4C is received
             }
         }
 
@@ -373,11 +372,3 @@ void processReceivedData() {
   Serial.println("<ERROR>"); // Print error message if the received data has less than 3 bytes
 }
 
-//Example: Set motor 1 to 50% speed forward and motor 2 to 75% speed reverse
-  // setMotorSpeed('L', 50);
-  // setMotorSpeed('R', -75);
-  
-  // delay(1000); // Delay for demonstration
-  
-  // stopMotors(); // Stop motors
-  // delay(1000); // Delay for demonstration
