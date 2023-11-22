@@ -10,7 +10,6 @@ from aev import AEV
 
 sock = Sock()
 aev = AEV()
-client_list = []
 
 
 def send_telemetry(ws: Sock, controls: bool):
@@ -42,13 +41,11 @@ def echo(ws):
         print(data)
 
 
-
 @sock.route('/control')
 def control(ws):
     """
     0000 0000
-     ECO WASD
-    E: emergency stop   64
+      CO WASD
     C: close door       32
     O: open door        16
     W: forward           8
@@ -67,10 +64,7 @@ def control(ws):
             command = data['message']
         else:
             continue
-        if command >= 64:
-            # emergency stop
-            print('EMERGENCY STOP')
-        elif command == 32:
+        if command == 32:
             # close door
             print('CLOSING DOOR')
         elif command == 16:
@@ -110,5 +104,4 @@ def control(ws):
             print(status)
         else:
             print('STOPPING')
-    print('DISCONNECTED')
 
