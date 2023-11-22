@@ -9,6 +9,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 
 from aev import AEV
+from camera.camera_stream import CameraStream
 
 
 # initialize flask
@@ -48,6 +49,7 @@ def echo(ws):
     while True:
         aev.update_telemetry()
         ws.send(aev.telemetry)
+        print('sending telemetry')
         time.sleep(1)
 
 
@@ -86,11 +88,13 @@ def command_center_switch():
 
 def run_app():
     # app.run(host='0.0.0.0', debug=False, port=443, ssl_context=('/home/aev/aev/ssl/server.crt', '/home/aev/aev/ssl/server.key'))
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')
     cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':
     # qr_thread = threading.Thread(target=qr_code_loop)
     # qr_thread.start()
+
+    camera_rear = CameraStream(0)
     run_app()
