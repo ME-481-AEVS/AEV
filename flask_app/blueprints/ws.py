@@ -6,10 +6,8 @@ from flask_sock import Sock
 from simple_websocket import ConnectionClosed
 
 from aev import AEV
-from arduino_communication import ArduinoCommunication
 
 sock = Sock()
-ard_comm = ArduinoCommunication()
 aev = AEV()
 
 
@@ -34,9 +32,10 @@ def send_telemetry(ws: Sock, controls: bool):
 
 @sock.route('/telemetry')
 def echo(ws):
-    _thread = threading.Thread(target=send_telemetry, args=(ws, False))
-    _thread.daemon = True
-    _thread.start()
+    #_thread = threading.Thread(target=send_telemetry, args=(ws, False))
+    #_thread.daemon = True
+    #_thread.start()
+    aev.update_telemetry()
     while True:
         data = ws.receive()
         print(data)
@@ -58,7 +57,6 @@ def control(ws):
     #_thread.daemon = True
     #_thread.start()
     while ws.connected:
-        print(ard_comm.serial_comm.readline().decode('ascii', errors='ignore'))
         data = json.loads(ws.receive())
         print(data)
         command = 0
@@ -74,7 +72,7 @@ def control(ws):
             print('OPENING DOOR')
         elif command >= 8:
             # forward
-            status = 'MOVING FORWARD'
+            status = 'received FORWARD'
             if command == 12:
                 # left
                 status += ' LEFT'
@@ -84,7 +82,7 @@ def control(ws):
             else:
                 # just forward
                 pass
-            ard_comm.send_command('<FORWARD>')
+            aev.forward()
             print(status)
         elif command == 4:
             # left
@@ -106,6 +104,6 @@ def control(ws):
                 pass
             print(status)
         else:
-            ard_comm.send_command('<STOP>')
-            print('STOPPING')
+            aev.stop()
+            print('received STOPPING')
 

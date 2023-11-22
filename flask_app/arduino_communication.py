@@ -13,8 +13,12 @@ PORT = '/dev/ttyACM0'
 
 class ArduinoCommunication:
     def __init__(self):
-        self.serial_comm = Serial(PORT, BAUD_RATE)
-        self.serial_comm.timeout = 1
+        try:
+            self.serial_comm = Serial(PORT, BAUD_RATE)
+            self.serial_comm.timeout = 1
+        except:
+            print("Could not communicate with arduino.")
+            exit(1)
 
     def send_command(self, command='0', log=False):
         """
@@ -25,9 +29,9 @@ class ArduinoCommunication:
         i = command.strip()
         if i == '0':
             return "Invalid command"
-        self.serial_comm.write((i+'\n').encode())
-        # read the response from the Arduino
+        self.serial_comm.write((i + '\n').encode())
         """
+        # read the response from the Arduino
         try:
             if (log):
                 # log data received from the Arduino if log is True
