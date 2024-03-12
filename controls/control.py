@@ -6,4 +6,4 @@
 from extra.communication import *
 
 # testing the sendCommand function from communication.py
-sendCommand("<T[>") # get temperature test
+print(sendCommand("<T[>")) # get temperature test
