@@ -2,7 +2,7 @@
 # Date: 02/20/2021
 # Purpose: This program is used to communicate with the Arduino using the serial port.
 # The program sends a command to the Arduino and then waits for a response.
-# Authors: Owen Bramley 
+# Authors: Owen Bramley, Christian Komo
 
 import serial
 import time
