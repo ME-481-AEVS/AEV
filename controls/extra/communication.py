@@ -29,6 +29,7 @@ def sendCommand(command = '0', log = False):
     if (Log):
         file = open(LOGFILE, "a")
         file.write(serialcomm.readline().decode('ascii'))
+    print(serialcomm.readline().decode('ascii'))
     serialcomm.close()
     return "Complete" # close the serial port
 
