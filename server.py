@@ -41,11 +41,14 @@ def qr_code_loop():
         #             # close the door
 
 
-@sock.route('/echo')
+@sock.route('/telemetry')
 def echo(ws):
+    data = ws.receive()
+    print(data)
     while True:
-        data = ws.receive()
-        ws.send(data)
+        aev.update_telemetry()
+        ws.send(aev.telemetry)
+        time.sleep(1)
 
 
 @app.get('/')
