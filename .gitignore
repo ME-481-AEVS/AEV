@@ -1,8 +1,7 @@
-.idea
-__pycache__
+.idea/
+__pycache__/
+media/
+log/
+ssl/
 *.pyc
-media
-log
-env
-ssl
-
+.env

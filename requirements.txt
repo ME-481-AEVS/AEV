@@ -1,45 +1,6 @@
-# circuit-python interpreter for python
-Adafruit-Blinka
-
-# AHT20 sensor library
-adafruit-circuitpython-ahtx0
-
-# adxl34 sensor library
-adafruit-circuitpython-adxl34x
-
-#gps
-adafruit-circuitpython-gps
-
-# neopixel library
-adafruit-circuitpython-neopixel
-
-# neopixel spi 
-adafruit-circuitpython-neopixel-spi
-
-# livestreaming library
-python-ffmpeg-video-streaming
-
-# mini server
-flask
-
-# for camera
-opencv-python
-
-# for api stuff
-requests
-
-# GUI
-Pillow
-
-# sound
-playsound
-
-# motor controls
-Phidget22
-
-# CORS
-flask-cors
-
-# computer vision
-matplotlib
-numpy
+flask==3.0.2
+flask-sock==0.7.0
+flask-cors==4.0.0
+requests==2.31.0
+opencv-python==4.9.0.80
+python-dotenv==1.0.1
