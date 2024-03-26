@@ -260,32 +260,35 @@ void loop() {
   ultraSonicDistance();
 }
 
-String InBytes; 
-void loop (){
-  // check if serial communication if live
-  if (Serial.available() > 0) {
-    InBytes = Serial.readStringUntil('\n'); // read data until python adds its end of command \n
-    // format InBytes to parse data 
 
-      // seperate type and its data
-      // add all ^ to an array of integers
-  // run a loop until the command has been executed // loop this and remove data st its postion
-  // once ^ loop is done return a confirmation of commands executed // additionally, if only some of the InBytes commands were executed, send back what was not executedf
+// KOMO WORK FROM HERE:
+
+// String InBytes; 
+// void loop (){
+//   // check if serial communication if live
+//   if (Serial.available() > 0) {
+//     InBytes = Serial.readStringUntil('\n'); // read data until python adds its end of command \n
+//     // format InBytes to parse data 
+
+//       // seperate type and its data
+//       // add all ^ to an array of integers
+//   // run a loop until the command has been executed // loop this and remove data st its postion
+//   // once ^ loop is done return a confirmation of commands executed // additionally, if only some of the InBytes commands were executed, send back what was not executedf
   
-  if (InBytes== "on")
-  {
-    brake(1);
-  }
-  if (InBytes == "off")
-  {
-    brake(0);
-  }
-  else
-  {
-    Serial.write("invalid input");
-  }
-  }
-}
+//   if (InBytes== "on")
+//   {
+//     brake(1);
+//   }
+//   if (InBytes == "off")
+//   {
+//     brake(0);
+//   }
+//   else
+//   {
+//     Serial.write("invalid input");
+//   }
+//   }
+// }
 
 // https://forum.arduino.cc/t/serial-input-basics-updated/382007/3 example 6 modified
 const byte numBytes = 32;
