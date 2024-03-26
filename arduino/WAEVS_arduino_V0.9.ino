@@ -43,10 +43,10 @@ int GPS_ant;
 
 // define relay pins
 #define BRAKE_RELAY_PIN 25 //brake -> relay 1
-#define O_RELAY_PIN 27
-#define I_RELAY_PIN 29
-#define U_RELAY_PIN 31
-#define Y_RELAY_PIN 33
+#define LinearActuator_UP1 27
+#define LinearActuator_DOWN1 29
+#define LinearActuator_UP2 31
+#define LinearActuator_DOWN2 33
 #define T_RELAY_PIN 35
 #define R_RELAY_PIN 37
 #define E_RELAY_PIN 39
@@ -70,10 +70,10 @@ void setup()
 
   // set relay pins mode
   pinMode(BRAKE_RELAY_PIN, OUTPUT);
-  pinMode(O_RELAY_PIN, OUTPUT);
-  pinMode(I_RELAY_PIN, OUTPUT);
-  pinMode(U_RELAY_PIN, OUTPUT);
-  pinMode(Y_RELAY_PIN, OUTPUT);
+  pinMode(LinearActuator_UP1, OUTPUT);
+  pinMode(LinearActuator_DOWN1, OUTPUT);
+  pinMode(LinearActuator_UP2, OUTPUT);
+  pinMode(LinearActuator_DOWN2, OUTPUT);
   pinMode(T_RELAY_PIN, OUTPUT);
   pinMode(R_RELAY_PIN, OUTPUT);
   pinMode(E_RELAY_PIN, OUTPUT);
@@ -275,6 +275,35 @@ void loop() {
   ultraSonicDistance();
 }
 
+//Function to move Linear Actuators up and down
+const int LinearActuator_UP1 = 27;
+const int LinearActuator_DOWN1 = 29;
+const int LinearActuator_UP2 = 31;
+const int LinearActuator_DOWN2 = 33;
+
+void setup(){
+    pinMode(LinearActuator_UP1, OUTPUT);
+    pinMode(LinearActuator_DOWN1, OUTPUT);
+    pinMode(LinearActuator_UP2, OUTPUT);
+    pinMode(LinearActuator_DOWN2, OUTPUT);
+}
+
+void loop(){
+    delay(10000);
+    //Extend
+    digitalWrite(LinearActuator_UP1, LOW);
+    digitalWrite(LinearActuator_DOWN1, HIGH);
+    digitalWrite(LinearActuator_UP2, LOW);
+    digitalWrite(LinearActuator_DOWN2, HIGH);
+    delay(20000);
+    //Retract
+    digitalWrite(LinearActuator_UP1, HIGH);
+    digitalWrite(LinearActuator_DOWN1, LOW);
+    digitalWrite(LinearActuator_UP2, HIGH);
+    digitalWrite(LinearActuator_DOWN2, LOW);
+    delay(10000);
+}
+
 
 // KOMO WORK FROM HERE:
 
@@ -311,6 +340,12 @@ byte receivedBytes[numBytes];
 byte numReceived = 0;
 
 boolean newData = false;
+
+void setup() {
+    Serial.begin(9600);
+    Serial.println("<Arduino is ready>");
+}
+
 void loop() {
     recvBytesWithStartEndMarkers();
     showNewData();
@@ -319,10 +354,9 @@ void loop() {
 void recvBytesWithStartEndMarkers() {
     static boolean recvInProgress = false;
     static byte ndx = 0;
-    byte startMarker = 0x3C; // <
-    byte endMarker = 0x3E; // >
+    byte startMarker = 0x3C;
+    byte endMarker = 0x3E;
     byte rb;
-   
 
     while (Serial.available() > 0 && newData == false) {
         rb = Serial.read();
@@ -342,6 +376,10 @@ void recvBytesWithStartEndMarkers() {
                 ndx = 0;
                 newData = true;
             }
+            // Check if rb is the byte 0x4C (L)
+            if (rb == 0x4C) {
+                brake(); // Call the function brake if byte 0x4C is received
+            }
         }
 
         else if (rb == startMarker) {
@@ -356,18 +394,6 @@ void showNewData() {
         for (byte n = 0; n < numReceived; n++) {
             Serial.print(receivedBytes[n], HEX);
             Serial.print(' ');
-            char fN = (char)receivedBytes[n];
-            
-            // run the function with name corrisponding char value of the recived hex
-            if (n == 1) {
-              if (fN == 'T') {
-                getTemp();
-              } else if (fN == 'M') {
-                  brake(0);
-              } else {
-                Serial.print("Invalid function name");
-              }
-            }
         }
         Serial.println();
         newData = false;
@@ -382,4 +408,3 @@ void showNewData() {
   
   // stopMotors(); // Stop motors
   // delay(1000); // Delay for demonstration
-
