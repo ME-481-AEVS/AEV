@@ -317,6 +317,12 @@ byte receivedBytes[numBytes];
 byte numReceived = 0;
 
 boolean newData = false;
+
+void setup() {
+    Serial.begin(9600);
+    Serial.println("<Arduino is ready>");
+}
+
 void loop() {
     recvBytesWithStartEndMarkers();
     showNewData();
@@ -325,10 +331,9 @@ void loop() {
 void recvBytesWithStartEndMarkers() {
     static boolean recvInProgress = false;
     static byte ndx = 0;
-    byte startMarker = 0x3C; // <
-    byte endMarker = 0x3E; // >
+    byte startMarker = 0x3C;
+    byte endMarker = 0x3E;
     byte rb;
-   
 
     while (Serial.available() > 0 && newData == false) {
         rb = Serial.read();
@@ -348,6 +353,10 @@ void recvBytesWithStartEndMarkers() {
                 ndx = 0;
                 newData = true;
             }
+            // Check if rb is the byte 0x4C (L)
+            if (rb == 0x4C) {
+                brake(); // Call the function brake if byte 0x4C is received
+            }
         }
 
         else if (rb == startMarker) {
@@ -362,18 +371,6 @@ void showNewData() {
         for (byte n = 0; n < numReceived; n++) {
             Serial.print(receivedBytes[n], HEX);
             Serial.print(' ');
-            char fN = (char)receivedBytes[n];
-            
-            // run the function with name corrisponding char value of the recived hex
-            if (n == 1) {
-              if (fN == 'T') {
-                getTemp();
-              } else if (fN == 'M') {
-                  brake(0);
-              } else {
-                Serial.print("Invalid function name");
-              }
-            }
         }
         Serial.println();
         newData = false;
@@ -388,4 +385,3 @@ void showNewData() {
   
   // stopMotors(); // Stop motors
   // delay(1000); // Delay for demonstration
-
