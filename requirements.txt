@@ -1,21 +1,3 @@
-# circuit-python interpreter for python
-Adafruit-Blinka
-
-# AHT20 sensor library
-adafruit-circuitpython-ahtx0
-
-# adxl34 sensor library
-adafruit-circuitpython-adxl34x
-
-#gps
-adafruit-circuitpython-gps
-
-# neopixel library
-adafruit-circuitpython-neopixel
-
-# neopixel spi 
-adafruit-circuitpython-neopixel-spi
-
 # livestreaming library
 python-ffmpeg-video-streaming
 
@@ -34,12 +16,12 @@ Pillow
 # sound
 playsound
 
-# motor controls
-Phidget22
-
 # CORS
 flask-cors
 
 # computer vision
 matplotlib
 numpy
+
+# Arduino communication
+serial
