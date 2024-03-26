@@ -30,7 +30,7 @@ def sendCommand(command = '0', log = False):
     time.sleep(0.5)
     # read the response from the Arduino
     try:
-        if (Log): # log data recived from the Arduino if log is True
+        if (log): # log data recived from the Arduino if log is True
             file = open(LOGFILE, "a")
             file.write(serialcomm.readline().decode('ascii'))
         print(serialcomm.readline().decode('ascii'))
