@@ -42,10 +42,10 @@ int GPS_ant;
 
 // define relay pins
 #define BRAKE_RELAY_PIN 25 //brake -> relay 1
-#define LinearActuator_UP 27
-#define LinearActuator_DOWN 29
-#define U_RELAY_PIN 31
-#define Y_RELAY_PIN 33
+#define LinearActuator_UP1 27
+#define LinearActuator_DOWN1 29
+#define LinearActuator_UP2 31
+#define LinearActuator_DOWN2 33
 #define T_RELAY_PIN 35
 #define R_RELAY_PIN 37
 #define E_RELAY_PIN 39
@@ -63,10 +63,10 @@ void setup()
 
   // set relay pin as an output
   pinMode(BRAKE_RELAY_PIN, OUTPUT);
-  pinMode(LinearActuator_UP, OUTPUT);
-  pinMode(LinearActuator_DOWN, OUTPUT);
-  pinMode(U_RELAY_PIN, OUTPUT);
-  pinMode(Y_RELAY_PIN, OUTPUT);
+  pinMode(LinearActuator_UP1, OUTPUT);
+  pinMode(LinearActuator_DOWN1, OUTPUT);
+  pinMode(LinearActuator_UP2, OUTPUT);
+  pinMode(LinearActuator_DOWN2, OUTPUT);
   pinMode(T_RELAY_PIN, OUTPUT);
   pinMode(R_RELAY_PIN, OUTPUT);
   pinMode(E_RELAY_PIN, OUTPUT);
@@ -260,24 +260,32 @@ void loop() {
   ultraSonicDistance();
 }
 
-//Function to move Linear Actuator up and down
-const int LinearActuator_UP = 27;
-const int LinearActuator_DOWN = 29;
+//Function to move Linear Actuators up and down
+const int LinearActuator_UP1 = 27;
+const int LinearActuator_DOWN1 = 29;
+const int LinearActuator_UP2 = 31;
+const int LinearActuator_DOWN2 = 33;
 
 void setup(){
-    pinMode(LinearActuator_UP, OUTPUT);
-    pinMode(LinearActuator_DOWN, OUTPUT);
+    pinMode(LinearActuator_UP1, OUTPUT);
+    pinMode(LinearActuator_DOWN1, OUTPUT);
+    pinMode(LinearActuator_UP2, OUTPUT);
+    pinMode(LinearActuator_DOWN2, OUTPUT);
 }
 
 void loop(){
     delay(10000);
     //Extend
-    digitalWrite(LinearActuator_UP, LOW);
-    digitalWrite(LinearActuator_DOWN, HIGH);
+    digitalWrite(LinearActuator_UP1, LOW);
+    digitalWrite(LinearActuator_DOWN1, HIGH);
+    digitalWrite(LinearActuator_UP2, LOW);
+    digitalWrite(LinearActuator_DOWN2, HIGH);
     delay(20000);
     //Retract
-    digitalWrite(LinearActuator_UP, HIGH);
-    digitalWrite(LinearActuator_DOWN, LOW);
+    digitalWrite(LinearActuator_UP1, HIGH);
+    digitalWrite(LinearActuator_DOWN1, LOW);
+    digitalWrite(LinearActuator_UP2, HIGH);
+    digitalWrite(LinearActuator_DOWN2, LOW);
     delay(10000);
 }
 
