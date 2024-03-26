@@ -42,8 +42,8 @@ int GPS_ant;
 
 // define relay pins
 #define BRAKE_RELAY_PIN 25 //brake -> relay 1
-#define O_RELAY_PIN 27
-#define I_RELAY_PIN 29
+#define LinearActuator_UP 27
+#define LinearActuator_DOWN 29
 #define U_RELAY_PIN 31
 #define Y_RELAY_PIN 33
 #define T_RELAY_PIN 35
@@ -63,8 +63,8 @@ void setup()
 
   // set relay pin as an output
   pinMode(BRAKE_RELAY_PIN, OUTPUT);
-  pinMode(O_RELAY_PIN, OUTPUT);
-  pinMode(I_RELAY_PIN, OUTPUT);
+  pinMode(LinearActuator_UP, OUTPUT);
+  pinMode(LinearActuator_DOWN, OUTPUT);
   pinMode(U_RELAY_PIN, OUTPUT);
   pinMode(Y_RELAY_PIN, OUTPUT);
   pinMode(T_RELAY_PIN, OUTPUT);
@@ -258,6 +258,27 @@ void loop() {
   Serial.println(getTemp());
   brake();
   ultraSonicDistance();
+}
+
+//Function to move Linear Actuator up and down
+const int LinearActuator_UP = 27;
+const int LinearActuator_DOWN = 29;
+
+void setup(){
+    pinMode(LinearActuator_UP, OUTPUT);
+    pinMode(LinearActuator_DOWN, OUTPUT);
+}
+
+void loop(){
+    delay(10000);
+    //Extend
+    digitalWrite(LinearActuator_UP, LOW);
+    digitalWrite(LinearActuator_DOWN, HIGH);
+    delay(20000);
+    //Retract
+    digitalWrite(LinearActuator_UP, HIGH);
+    digitalWrite(LinearActuator_DOWN, LOW);
+    delay(10000);
 }
 
 
