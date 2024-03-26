@@ -5,6 +5,7 @@
 #include <Adafruit_AHTX0.h>
 #include <Servo.h>
 
+// Authors: Anna Kiraly, Owen Bramley, 
 
 Adafruit_AHTX0 aht;
 Adafruit_ADXL345_Unified accel = Adafruit_ADXL345_Unified();
@@ -54,6 +55,12 @@ int GPS_ant;
 #define TrigPin_1 48
 #define EchoPin_1 50
 
+// define tactile sensor pins
+#define TactileBtn_F 4 //front
+#define TactileBtn_B 4 //back
+#define TactileBtn_L 4 //left
+#define TactileBtn_R 4 //right
+
 void setup()
 {
   Serial.begin(115200);
@@ -61,7 +68,7 @@ void setup()
 
   initializeMotors(); // Initialize motors
 
-  // set relay pin as an output
+  // set relay pins mode
   pinMode(BRAKE_RELAY_PIN, OUTPUT);
   pinMode(O_RELAY_PIN, OUTPUT);
   pinMode(I_RELAY_PIN, OUTPUT);
@@ -71,9 +78,15 @@ void setup()
   pinMode(R_RELAY_PIN, OUTPUT);
   pinMode(E_RELAY_PIN, OUTPUT);
 
-  // set ultrasonic module pins 
+  // set ultrasonic module pins mode 
   pinMode(TrigPin_1, OUTPUT);
   pinMode(EchoPin_1, INPUT);
+
+  // set tactile sensor pins mode
+  pinMode(TactileBtn_F, INPUT_PULLUP);
+  pinMode(TactileBtn_B, INPUT_PULLUP);
+  pinMode(TactileBtn_L, INPUT_PULLUP);
+  pinMode(TactileBtn_R, INPUT_PULLUP);
 
   //check AHT20 is alive
   if (! aht.begin()) {
@@ -145,6 +158,19 @@ void getGPS(int *satellites, float *longitude, int *fix, int *fix_quality)
     // GPS_ant = ((int)GPS.antenna);
   }
 
+}
+
+// Tactile sensor area reading fuction
+int readTactileSensor() {
+  byte buttonState = digitalRead(TactileBtn_F);
+
+  if (buttonState == LOW) {
+    Serial.println("Object detected");
+  } else {
+    Serial.println("Clear");
+  }
+  
+  return triggeredArea;
 }
 
 String getAccel() 
