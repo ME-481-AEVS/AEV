@@ -160,19 +160,33 @@ void getGPS(int *satellites, float *longitude, int *fix, int *fix_quality)
 
 }
 
-// Tactile sensor area reading fuction
-int readTactileSensor() {
-  byte buttonState = digitalRead(TactileBtn_F);
-
-  if (buttonState == LOW) {
-    Serial.println("Object detected");
-  } else {
-    Serial.println("Clear");
-  }
-  
-  return triggeredArea;
+// Function to initialize the motors
+void initializeMotors() {
+  motorL.attach(motorLpin); // Attach motorL to its PWM pin
+  motorR.attach(motorRpin); // Attach motorR to its PWM pin
 }
 
+// Function to read the tactile sensors and return area of concern
+int readTactileSensor() {
+  byte stateF = digitalRead(TactileBtn_F); // 1 = front
+  byte stateB = digitalRead(TactileBtn_B); // 2 = back
+  byte stateL = digitalRead(TactileBtn_L); // 3 = left
+  byte stateR = digitalRead(TactileBtn_R); // 4 = right
+
+  if (stateF == LOW) {
+    return 1;
+  } if (stateB == LOW) {
+    return 2;
+  } if (stateL == LOW) {
+    return 3;
+  } if (stateR == LOW) {
+    return 4;
+  }
+
+  return 0;
+}
+
+// Function to get acceleration data
 String getAccel() 
 {
    sensors_event_t event; 
@@ -183,6 +197,7 @@ String getAccel()
    return String(event.acceleration.x)+","+String(event.acceleration.y)+","+String(event.acceleration.z);
 }
 
+// Function to get temperature data
 float getTemp() {
   sensors_event_t temp;
   aht_temp->getEvent(&temp);
@@ -192,36 +207,14 @@ float getTemp() {
   return temp.temperature;
 }
 
-
-int brake() { // int brake(int type)
-  // if (type == 1){
-  //   // turn brakes on
-  //   digitalWrite(BRAKE_RELAY_PIN, HIGH);
-  // } else if (type == 0) {
-  //   digitalWrite(BRAKE_RELAY_PIN, LOW);
-  // }
-  
-  digitalWrite(O_RELAY_PIN, HIGH);
-  delay(100);
-  digitalWrite(O_RELAY_PIN, LOW);
-  digitalWrite(I_RELAY_PIN, HIGH);
-  delay(100);
-  digitalWrite(I_RELAY_PIN, LOW);
-  digitalWrite(U_RELAY_PIN, HIGH);
-  delay(100);
-  digitalWrite(U_RELAY_PIN, LOW);
-  digitalWrite(Y_RELAY_PIN, HIGH);
-  delay(100);
-  digitalWrite(Y_RELAY_PIN, LOW);
-  digitalWrite(T_RELAY_PIN, HIGH);
-  delay(100);
-  digitalWrite(T_RELAY_PIN, LOW);
-  digitalWrite(R_RELAY_PIN, HIGH);
-  delay(100);
-  digitalWrite(R_RELAY_PIN, LOW);
-  digitalWrite(E_RELAY_PIN, HIGH);
-  delay(100);
-  digitalWrite(E_RELAY_PIN, LOW);
+// Function to control the brakes
+int brake(int type) {
+  if (type == 1){
+    // turn brakes on
+    digitalWrite(BRAKE_RELAY_PIN, HIGH);
+  } else if (type == 0) {
+    digitalWrite(BRAKE_RELAY_PIN, LOW);
+  }
 }
 
 // fucntion to fetch ultrasonic sensor distances 
@@ -264,11 +257,7 @@ void setMotorSpeed(int motor, int speed) {
   }
 }
 
-// Function to initialize the motors
-void initializeMotors() {
-  motorL.attach(motorLpin); // Attach motorL to its PWM pin
-  motorR.attach(motorRpin); // Attach motorR to its PWM pin
-}
+
 
 void loop() {
   getGPS(&GPS_sat, &GPS_lon, &GPS_fix, &GPS_fixq);
