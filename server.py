@@ -53,6 +53,12 @@ def echo(ws):
         time.sleep(1)
 
 
+@sock.route('/control')
+def control(ws):
+    data = ws.receive()
+    print(data)
+
+
 @app.get('/')
 def index():
     return render_template('index.html')
@@ -66,24 +72,6 @@ def rear():
 @app.route('/front-camera')
 def front():
     return Response(camera_front.generate(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-
-@app.post('/command_center_switch')
-def command_center_switch():
-    # turns manual controls on/off
-    manual = int(request.data.decode('UTF-8'))
-    # if manual == 1:
-    #     motor_control = MotorControl()
-    #     print('Manual control turned on')
-    #     heartbeat_thread = threading.Thread(target=check_heartbeat)
-    #     heartbeat_thread.start()
-    # else:
-    #     if motor_control is None:
-    #         motor_control = MotorControl()
-    #     motor_control.exit()
-    #     motor_control = None
-    #     print('Manual control turned off')
-    return jsonify(msg='Manual control off') if manual == 0 else jsonify(msg='Manual control on')
 
 
 def run_app():
