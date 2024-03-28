@@ -305,50 +305,20 @@ void loop(){
 }
 
 
-// KOMO WORK FROM HERE:
+// Jetson <-> Arduino communication FROM: https://forum.arduino.cc/t/serial-input-basics-updated/382007/3 (example 6 modified)
 
-// String InBytes; 
-// void loop (){
-//   // check if serial communication if live
-//   if (Serial.available() > 0) {
-//     InBytes = Serial.readStringUntil('\n'); // read data until python adds its end of command \n
-//     // format InBytes to parse data 
-
-//       // seperate type and its data
-//       // add all ^ to an array of integers
-//   // run a loop until the command has been executed // loop this and remove data st its postion
-//   // once ^ loop is done return a confirmation of commands executed // additionally, if only some of the InBytes commands were executed, send back what was not executedf
-  
-//   if (InBytes== "on")
-//   {
-//     brake(1);
-//   }
-//   if (InBytes == "off")
-//   {
-//     brake(0);
-//   }
-//   else
-//   {
-//     Serial.write("invalid input");
-//   }
-//   }
-// }
-
-// https://forum.arduino.cc/t/serial-input-basics-updated/382007/3 example 6 modified
 const byte numBytes = 32;
 byte receivedBytes[numBytes];
 byte numReceived = 0;
 
 boolean newData = false;
 
-void setup() {
-    Serial.begin(9600);
-    Serial.println("<Arduino is ready>");
-}
-
 void loop() {
+    // contant communication
     recvBytesWithStartEndMarkers();
-    showNewData();
+    if (newData) {
+        processReceivedData();
+    }
 }
 
 void recvBytesWithStartEndMarkers() {
@@ -388,16 +358,26 @@ void recvBytesWithStartEndMarkers() {
     }
 }
 
-void showNewData() {
-    if (newData == true) {
-        Serial.print("This just in (HEX values)... ");
-        for (byte n = 0; n < numReceived; n++) {
-            Serial.print(receivedBytes[n], HEX);
-            Serial.print(' ');
-        }
-        Serial.println();
-        newData = false;
-    }
+void processReceivedData() {
+    if (numReceived >= 3){ // Check is the recived data is at least 3 bytes
+      if (receivedBytes[0] == '<' && receivedBytes[numReceived] == '>') { // Check if the received data has the correct start and end markers
+        // If the received data is contains b (brake)
+        if (receivedBytes[1] == 'b') { 
+          if (receivedBytes[2] == '1') { // Check value attached to the start marker
+            Serial.println("Received <b1>. Performing specific action...");
+            // Perform your desired action here
+          }
+        } 
+          // If the received data is "<b1>"
+          Serial.println("Received <b1>. Performing specific action...");
+          // Perform your desired action here
+      } else {
+          Serial.println("<ERROR>");
+      }
+      newData = false;
+  }
+} else {
+  Serial.println("<ERROR>"); // Print error message if the received data has less than 3 bytes
 }
 
 //Example: Set motor 1 to 50% speed forward and motor 2 to 75% speed reverse
