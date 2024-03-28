@@ -23,6 +23,9 @@
 #define ULTRASONIC_THRESHOLD 12 // cm that the ultrasonic sensors will alert
 #define ULTRASONIC_TRIG_PIN_1 48
 #define ULTRASONIC_ECHO_PIN_1 50
+
+
+// TODO shouldn't these be different?
 #define TACTILE_BTN_FRONT 4
 #define TACTILE_BTN_BACK 4
 #define TACTILE_BTN_LEFT 4
@@ -119,7 +122,7 @@ void loop() {
 
 // Receive GPS coordinates
 // TODO need to test and set return data
-void getGPS(int *satellites, float *longitude, int *fix, int *fixQuality) {
+void getGPS(int *satellites, float *latitude, float *longitude, int *fix, int *fixQuality) {
     if (GPS_ECHO) {
         char c = GPS.read();
         if (c) {
@@ -142,7 +145,7 @@ void getGPS(int *satellites, float *longitude, int *fix, int *fixQuality) {
     *fixQuality = ((int)GPS.fixquality);
     *fix = ((int)GPS.fix);
     if (GPS.fix) {
-        // GPS_lat = GPS.lat;
+        *latitude = GPS.lat;
         *longitude = GPS.lon;
         // GPS_speed = ((int)GPS.speed);
         // Serial.print("Angle: "); Serial.println(GPS.angle);
@@ -194,12 +197,7 @@ String getAccel() {
 
 // Get temperature data
 float getTemp() {
-    sensors_event_t temp;
-    aht_temp->getEvent(&temp);
-
-    //delay(200);
-    //return temperature in degrees C
-    return temp.temperature;
+    return tempSensor.getTemperature();
 }
 
 // Turn brakes on/off
@@ -255,11 +253,12 @@ void setMotorSpeed(int motor, int speed) {
 // Get all telemetry data
 void getTelemetry() {
     int gpsSat;
+    float gpsLat;
     float gpsLong;
     int gpsFix;
     int gpsFixQuality;
 
-    getGPS(&gpsSat, &gpsLong, &gpsFix, &gpsFixQuality);
+    getGPS(&gpsSat, &gpsLat, &gpsLong, &gpsFix, &gpsFixQuality);
     if (gpsFix == 0){
         Serial.print("No GPS fix");
     } else {
