@@ -281,13 +281,6 @@ const int LinearActuator_DOWN1 = 29;
 const int LinearActuator_UP2 = 31;
 const int LinearActuator_DOWN2 = 33;
 
-void setup(){
-    pinMode(LinearActuator_UP1, OUTPUT);
-    pinMode(LinearActuator_DOWN1, OUTPUT);
-    pinMode(LinearActuator_UP2, OUTPUT);
-    pinMode(LinearActuator_DOWN2, OUTPUT);
-}
-
 void loop(){
     delay(10000);
     //Extend
