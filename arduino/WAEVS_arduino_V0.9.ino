@@ -5,6 +5,7 @@
 #include <Adafruit_AHTX0.h>
 #include <Servo.h>
 
+// Authors: Anna Kiraly, Owen Bramley, 
 
 Adafruit_AHTX0 aht;
 Adafruit_ADXL345_Unified accel = Adafruit_ADXL345_Unified();
@@ -42,10 +43,10 @@ int GPS_ant;
 
 // define relay pins
 #define BRAKE_RELAY_PIN 25 //brake -> relay 1
-#define O_RELAY_PIN 27
-#define I_RELAY_PIN 29
-#define U_RELAY_PIN 31
-#define Y_RELAY_PIN 33
+#define LinearActuator_UP1 27
+#define LinearActuator_DOWN1 29
+#define LinearActuator_UP2 31
+#define LinearActuator_DOWN2 33
 #define T_RELAY_PIN 35
 #define R_RELAY_PIN 37
 #define E_RELAY_PIN 39
@@ -54,6 +55,12 @@ int GPS_ant;
 #define TrigPin_1 48
 #define EchoPin_1 50
 
+// define tactile sensor pins
+#define TactileBtn_F 4 //front
+#define TactileBtn_B 4 //back
+#define TactileBtn_L 4 //left
+#define TactileBtn_R 4 //right
+
 void setup()
 {
   Serial.begin(115200);
@@ -61,19 +68,25 @@ void setup()
 
   initializeMotors(); // Initialize motors
 
-  // set relay pin as an output
+  // set relay pins mode
   pinMode(BRAKE_RELAY_PIN, OUTPUT);
-  pinMode(O_RELAY_PIN, OUTPUT);
-  pinMode(I_RELAY_PIN, OUTPUT);
-  pinMode(U_RELAY_PIN, OUTPUT);
-  pinMode(Y_RELAY_PIN, OUTPUT);
+  pinMode(LinearActuator_UP1, OUTPUT);
+  pinMode(LinearActuator_DOWN1, OUTPUT);
+  pinMode(LinearActuator_UP2, OUTPUT);
+  pinMode(LinearActuator_DOWN2, OUTPUT);
   pinMode(T_RELAY_PIN, OUTPUT);
   pinMode(R_RELAY_PIN, OUTPUT);
   pinMode(E_RELAY_PIN, OUTPUT);
 
-  // set ultrasonic module pins 
+  // set ultrasonic module pins mode 
   pinMode(TrigPin_1, OUTPUT);
   pinMode(EchoPin_1, INPUT);
+
+  // set tactile sensor pins mode
+  pinMode(TactileBtn_F, INPUT_PULLUP);
+  pinMode(TactileBtn_B, INPUT_PULLUP);
+  pinMode(TactileBtn_L, INPUT_PULLUP);
+  pinMode(TactileBtn_R, INPUT_PULLUP);
 
   //check AHT20 is alive
   if (! aht.begin()) {
@@ -147,6 +160,33 @@ void getGPS(int *satellites, float *longitude, int *fix, int *fix_quality)
 
 }
 
+// Function to initialize the motors
+void initializeMotors() {
+  motorL.attach(motorLpin); // Attach motorL to its PWM pin
+  motorR.attach(motorRpin); // Attach motorR to its PWM pin
+}
+
+// Function to read the tactile sensors and return area of concern
+int readTactileSensor() {
+  byte stateF = digitalRead(TactileBtn_F); // 1 = front
+  byte stateB = digitalRead(TactileBtn_B); // 2 = back
+  byte stateL = digitalRead(TactileBtn_L); // 3 = left
+  byte stateR = digitalRead(TactileBtn_R); // 4 = right
+
+  if (stateF == LOW) {
+    return 1;
+  } if (stateB == LOW) {
+    return 2;
+  } if (stateL == LOW) {
+    return 3;
+  } if (stateR == LOW) {
+    return 4;
+  }
+
+  return 0;
+}
+
+// Function to get acceleration data
 String getAccel() 
 {
    sensors_event_t event; 
@@ -157,6 +197,7 @@ String getAccel()
    return String(event.acceleration.x)+","+String(event.acceleration.y)+","+String(event.acceleration.z);
 }
 
+// Function to get temperature data
 float getTemp() {
   sensors_event_t temp;
   aht_temp->getEvent(&temp);
@@ -166,36 +207,14 @@ float getTemp() {
   return temp.temperature;
 }
 
-
-int brake() { // int brake(int type)
-  // if (type == 1){
-  //   // turn brakes on
-  //   digitalWrite(BRAKE_RELAY_PIN, HIGH);
-  // } else if (type == 0) {
-  //   digitalWrite(BRAKE_RELAY_PIN, LOW);
-  // }
-  
-  digitalWrite(O_RELAY_PIN, HIGH);
-  delay(100);
-  digitalWrite(O_RELAY_PIN, LOW);
-  digitalWrite(I_RELAY_PIN, HIGH);
-  delay(100);
-  digitalWrite(I_RELAY_PIN, LOW);
-  digitalWrite(U_RELAY_PIN, HIGH);
-  delay(100);
-  digitalWrite(U_RELAY_PIN, LOW);
-  digitalWrite(Y_RELAY_PIN, HIGH);
-  delay(100);
-  digitalWrite(Y_RELAY_PIN, LOW);
-  digitalWrite(T_RELAY_PIN, HIGH);
-  delay(100);
-  digitalWrite(T_RELAY_PIN, LOW);
-  digitalWrite(R_RELAY_PIN, HIGH);
-  delay(100);
-  digitalWrite(R_RELAY_PIN, LOW);
-  digitalWrite(E_RELAY_PIN, HIGH);
-  delay(100);
-  digitalWrite(E_RELAY_PIN, LOW);
+// Function to control the brakes
+int brake(int type) {
+  if (type == 1){
+    // turn brakes on
+    digitalWrite(BRAKE_RELAY_PIN, HIGH);
+  } else if (type == 0) {
+    digitalWrite(BRAKE_RELAY_PIN, LOW);
+  }
 }
 
 // fucntion to fetch ultrasonic sensor distances 
@@ -238,11 +257,7 @@ void setMotorSpeed(int motor, int speed) {
   }
 }
 
-// Function to initialize the motors
-void initializeMotors() {
-  motorL.attach(motorLpin); // Attach motorL to its PWM pin
-  motorR.attach(motorRpin); // Attach motorR to its PWM pin
-}
+
 
 void loop() {
   getGPS(&GPS_sat, &GPS_lon, &GPS_fix, &GPS_fixq);
@@ -260,32 +275,57 @@ void loop() {
   ultraSonicDistance();
 }
 
-String InBytes; 
-void loop (){
-  // check if serial communication if live
-  if (Serial.available() > 0) {
-    InBytes = Serial.readStringUntil('\n'); // read data until python adds its end of command \n
-    // format InBytes to parse data 
+//Function to move Linear Actuators up and down
+const int LinearActuator_UP1 = 27;
+const int LinearActuator_DOWN1 = 29;
+const int LinearActuator_UP2 = 31;
+const int LinearActuator_DOWN2 = 33;
 
-      // seperate type and its data
-      // add all ^ to an array of integers
-  // run a loop until the command has been executed // loop this and remove data st its postion
-  // once ^ loop is done return a confirmation of commands executed // additionally, if only some of the InBytes commands were executed, send back what was not executedf
-  
-  if (InBytes== "on")
-  {
-    brake(1);
-  }
-  if (InBytes == "off")
-  {
-    brake(0);
-  }
-  else
-  {
-    Serial.write("invalid input");
-  }
-  }
+void loop(){
+    delay(10000);
+    //Extend
+    digitalWrite(LinearActuator_UP1, LOW);
+    digitalWrite(LinearActuator_DOWN1, HIGH);
+    digitalWrite(LinearActuator_UP2, LOW);
+    digitalWrite(LinearActuator_DOWN2, HIGH);
+    delay(20000);
+    //Retract
+    digitalWrite(LinearActuator_UP1, HIGH);
+    digitalWrite(LinearActuator_DOWN1, LOW);
+    digitalWrite(LinearActuator_UP2, HIGH);
+    digitalWrite(LinearActuator_DOWN2, LOW);
+    delay(10000);
 }
+
+
+// KOMO WORK FROM HERE:
+
+// String InBytes; 
+// void loop (){
+//   // check if serial communication if live
+//   if (Serial.available() > 0) {
+//     InBytes = Serial.readStringUntil('\n'); // read data until python adds its end of command \n
+//     // format InBytes to parse data 
+
+//       // seperate type and its data
+//       // add all ^ to an array of integers
+//   // run a loop until the command has been executed // loop this and remove data st its postion
+//   // once ^ loop is done return a confirmation of commands executed // additionally, if only some of the InBytes commands were executed, send back what was not executedf
+  
+//   if (InBytes== "on")
+//   {
+//     brake(1);
+//   }
+//   if (InBytes == "off")
+//   {
+//     brake(0);
+//   }
+//   else
+//   {
+//     Serial.write("invalid input");
+//   }
+//   }
+// }
 
 // https://forum.arduino.cc/t/serial-input-basics-updated/382007/3 example 6 modified
 const byte numBytes = 32;
@@ -293,6 +333,7 @@ byte receivedBytes[numBytes];
 byte numReceived = 0;
 
 boolean newData = false;
+
 void loop() {
     recvBytesWithStartEndMarkers();
     showNewData();
@@ -301,10 +342,9 @@ void loop() {
 void recvBytesWithStartEndMarkers() {
     static boolean recvInProgress = false;
     static byte ndx = 0;
-    byte startMarker = 0x3C; // <
-    byte endMarker = 0x3E; // >
+    byte startMarker = 0x3C;
+    byte endMarker = 0x3E;
     byte rb;
-   
 
     while (Serial.available() > 0 && newData == false) {
         rb = Serial.read();
@@ -324,6 +364,10 @@ void recvBytesWithStartEndMarkers() {
                 ndx = 0;
                 newData = true;
             }
+            // Check if rb is the byte 0x4C (L)
+            if (rb == 0x4C) {
+                brake(); // Call the function brake if byte 0x4C is received
+            }
         }
 
         else if (rb == startMarker) {
@@ -338,18 +382,6 @@ void showNewData() {
         for (byte n = 0; n < numReceived; n++) {
             Serial.print(receivedBytes[n], HEX);
             Serial.print(' ');
-            char fN = (char)receivedBytes[n];
-            
-            // run the function with name corrisponding char value of the recived hex
-            if (n == 1) {
-              if (fN == 'T') {
-                getTemp();
-              } else if (fN == 'M') {
-                  brake(0);
-              } else {
-                Serial.print("Invalid function name");
-              }
-            }
         }
         Serial.println();
         newData = false;
@@ -364,4 +396,3 @@ void showNewData() {
   
   // stopMotors(); // Stop motors
   // delay(1000); // Delay for demonstration
-
