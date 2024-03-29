@@ -6,9 +6,10 @@ from flask_sock import Sock
 from simple_websocket import ConnectionClosed
 
 from aev import AEV
-
+from arduino_communication import ArduinoCommunication
 
 sock = Sock()
+ard_comm = ArduinoCommunication()
 aev = AEV()
 
 
@@ -82,6 +83,7 @@ def control(ws):
             else:
                 # just forward
                 pass
+            ard_comm.send_command('<FORWARD>')
             print(status)
         elif command == 4:
             # left
@@ -103,5 +105,6 @@ def control(ws):
                 pass
             print(status)
         else:
+            ard_comm.send_command('<STOP>')
             print('STOPPING')
 
