@@ -45,5 +45,5 @@ class ArduinoCommunication:
         """
         Close the serial port on program exit
         """
-        self.serial_comm.close()
+        serial_comm.close()
         print('Serial port closed')
