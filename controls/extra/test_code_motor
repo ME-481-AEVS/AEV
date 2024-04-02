@@ -1,0 +1,9 @@
+from communication import *
+
+n = True
+comm = ArduinoCommunication()
+while (n):
+    s = input()
+    if s == "stop":
+        n = False
+    comm.send_command(s)
