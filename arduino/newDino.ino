@@ -69,20 +69,16 @@ void loop() {
 }
 
 void parseCommand(String command) {
-    switch (command) {
-        case "<FORWARD>":
-            Serial.println("From dino: moving forward");
-            moveForward();
-            break;
-        case "<STOP>":
-            Serial.println("From dino: stopping");
-            stop();
-            break;
-        case "<TELEMETRY>":
-            Serial.println("From dino: getting telemetry");
-            getTelemetry();
-            break;
-        }
+    if (command == "<FORWARD>") {
+        Serial.println("From dino: moving forward");
+        moveForward();
+    } else if (command == "<STOP>") {
+        Serial.println("From dino: stopping");
+        stop();
+    } else if (command == "<TELEMETRY>") {
+        Serial.println("From dino: getting telemetry");
+        getTelemetry();
+    }
 }
 
 void moveForward() {
