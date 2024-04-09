@@ -14,6 +14,12 @@ const int ULTRASONIC_TRIG_PIN_1 = 48;
 const int ULTRASONIC_ECHO_PIN_1 = 50;
 const bool GPS_ECHO = false; // turn off echoing the GPS data to the Serial console
 
+// TODO these should be different
+const int TACTILE_BTN_FRONT = 4;
+const int TACTILE_BTN_BACK = 4;
+const int TACTILE_BTN_LEFT = 4;
+const int TACTILE_BTN_RIGHT = 4;
+
 
 // Initialize the AHT20 sensor
 Adafruit_AHTX0 tempSensor;
