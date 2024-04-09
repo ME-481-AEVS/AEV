@@ -4,13 +4,14 @@
 #include <Adafruit_GPS.h>
 #include <Adafruit_AHTX0.h>
 
+#define GPS_SERIAL Serial3 // set GPS_SERIAL port to 3 (pins 14,15)
+
 const int MOTOR_PIN = 5;
 const int MOTOR_SPEED_STOP = 50;
 const int MOTOR_SPEED_GO = 150; // between 0 (stopped) and 255 (full speed)
 const int ULTRASONIC_THRESHOLD = 12; // cm that the ultrasonic sensors will alert
 const int ULTRASONIC_TRIG_PIN_1 = 48;
 const int ULTRASONIC_ECHO_PIN_1 = 50;
-const int GPS_SERIAL = 3; // set GPS_SERIAL port to 3 (pins 14,15)
 const bool GPS_ECHO = false; // turn off echoing the GPS data to the Serial console
 
 
