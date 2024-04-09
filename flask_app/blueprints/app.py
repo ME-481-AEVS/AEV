@@ -17,7 +17,7 @@ def create_app():
     from .ws import sock
     sock.init_app(app)
 
-    #app.run(host='0.0.0.0', debug=True)
+    # app.run(host='0.0.0.0', debug=True)
 
     return app
 

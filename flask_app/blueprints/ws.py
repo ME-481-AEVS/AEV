@@ -58,7 +58,7 @@ def control(ws):
     #_thread.daemon = True
     #_thread.start()
     while ws.connected:
-        print(ard_comm.serial_comm.readline().decode('ascii'))
+        print(ard_comm.serial_comm.readline().decode('ascii', errors='ignore'))
         data = json.loads(ws.receive())
         print(data)
         command = 0
