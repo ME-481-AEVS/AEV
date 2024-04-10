@@ -84,6 +84,8 @@ void parseCommand(String command) {
     } else if (command == "<TELEMETRY>") {
         Serial.println("From dino: getting telemetry");
         getTelemetry();
+    } else {
+        Serial.println("From dino: idk what to do! :(");
     }
 }
 
