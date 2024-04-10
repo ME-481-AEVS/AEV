@@ -45,7 +45,9 @@ def echo(ws):
 def control(ws):
     """
     0000 0000
-      CO WASD
+    HHCO WASD
+    H: headlights off  128
+    H: headlights on    64
     C: close door       32
     O: open door        16
     W: forward           8
@@ -64,7 +66,15 @@ def control(ws):
             command = data['message']
         else:
             continue
-        if command == 32:
+        if command == 128:
+            # headlights off
+            print('HEADLIGHTS OFF')
+            aev.headlights_off()
+        elif command == 64:
+            # headlights on
+            print('HEADLIGHTS ON')
+            aev.headlights_on()
+        elif command == 32:
             # close door
             print('CLOSING DOOR')
         elif command == 16:
@@ -76,32 +86,37 @@ def control(ws):
             if command == 12:
                 # left
                 status += ' LEFT'
+                aev.forward_left()
             elif command == 9:
                 # right
                 status += ' RIGHT'
+                aev.forward_right()
             else:
                 # just forward
-                pass
+                aev.forward()
             print(status)
-            aev.forward()
         elif command == 4:
             # left
             print('TURNING LEFT')
+            aev.turn_left()
         elif command == 1:
             # right
             print('TURNING RIGHT')
+            aev.turn_right()
         elif command >= 2:
             # backward
             status = 'MOVING BACKWARD'
             if command == 6:
                 # left
                 status += ' LEFT'
+                aev.backward_left()
             elif command == 3:
                 # right
                 status += ' RIGHT'
+                aev.backward_right()
             else:
                 # just back
-                pass
+                aev.backward()
             print(status)
         else:
             print('received STOPPING')

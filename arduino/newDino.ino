@@ -41,8 +41,6 @@ const int MOTOR_SPEED_TURN = 100;
 const bool GPS_ECHO = false; // turn off echoing the GPS data to the Serial console
 
 
-
-
 // Initialize the AHT20 sensor
 Adafruit_AHTX0 tempSensor;
 // Initialize the ADXL345 sensor
@@ -120,7 +118,7 @@ void parseCommand(String command) {
     if (command == "<FORWARD>") {
         Serial.println("From dino: moving forward");
         moveForward();
-    } else if (command == "<REVERSE>") {
+    } else if (command == "<BACKWARD>") {
         Serial.println("From dino: moving backward");
         moveBackward();
     } else if (command == "<RIGHT>") {
