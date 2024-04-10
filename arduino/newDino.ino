@@ -1,29 +1,46 @@
+/*
+ * TODOS:
+ *  - Add the rest of the ultrasonic sensors - update fn to take in a pin (?) and return distance
+ *  - Add tactile sensor fn
+ *  - Add brake fn (confirm pin 25? other pin?)
+ *  - Add linear actuators fn (implement stop?)
+ *  - Confirm motor pins (L/R, forward/back should match)
+ *  - Double check turn logic..
+ */
+
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_ADXL345_U.h>
 #include <Adafruit_GPS.h>
 #include <Adafruit_AHTX0.h>
 
+// define pins
 #define GPS_SERIAL Serial3 // set GPS_SERIAL port to 3 (pins 14,15)
-
-const int MOTOR_PIN_L = 5;
-const int MOTOR_PIN_R = 6;
-const int MOTOR_SPEED_STOP = 50;
-const int MOTOR_SPEED_GO = 150; // between 0 (stopped) and 255 (full speed)
-const int ULTRASONIC_THRESHOLD = 12; // cm that the ultrasonic sensors will alert
+const int MOTOR_L_FORWARD_PIN = 5;
+const int MOTOR_R_FORWARD_PIN = 6;
+const int MOTOR_L_REVERSE_PIN = 35;
+const int MOTOR_R_REVERSE_PIN = 37;
 const int ULTRASONIC_TRIG_PIN_1 = 48;
 const int ULTRASONIC_ECHO_PIN_1 = 50;
-const bool GPS_ECHO = false; // turn off echoing the GPS data to the Serial console
-
+const int HEADLIGHTS_PIN = 31;
 const int T_RELAY_PIN = 35;
 const int R_RELAY_PIN = 37;
 const int E_RELAY_PIN = 39;
 
-// TODO these should be different
+// TODO update
 const int TACTILE_BTN_FRONT = 4;
 const int TACTILE_BTN_BACK = 4;
 const int TACTILE_BTN_LEFT = 4;
 const int TACTILE_BTN_RIGHT = 4;
+
+// settings
+const int ULTRASONIC_THRESHOLD = 12; // cm that the ultrasonic sensors will alert
+const int MOTOR_SPEED_STOP = 50;
+const int MOTOR_SPEED_GO = 150; // between 0 (stopped) and 255 (full speed)
+const int MOTOR_SPEED_TURN = 100;
+const bool GPS_ECHO = false; // turn off echoing the GPS data to the Serial console
+
+
 
 
 // Initialize the AHT20 sensor
@@ -38,20 +55,25 @@ Adafruit_GPS GPS(&GPS_SERIAL);
 void setup() {
     Serial.begin(115200);
 
-    pinMode(MOTOR_PIN_R, OUTPUT); // motor pin is an output
-    pinMode(MOTOR_PIN_L, OUTPUT); // motor pin is an output
-
+    // relays
     pinMode(T_RELAY_PIN, OUTPUT);
     pinMode(R_RELAY_PIN, OUTPUT);
     pinMode(E_RELAY_PIN, OUTPUT);
 
-    // Set ultrasonic module pins mode
+    // motor pins
+    pinMode(MOTOR_R_FORWARD_PIN, OUTPUT);
+    pinMode(MOTOR_L_FORWARD_PIN, OUTPUT);
+
+    // headlights
+    pinMode(HEADLIGHTS_PIN, OUTPUT);
+
+    // ultrasonics
     pinMode(ULTRASONIC_TRIG_PIN_1, OUTPUT);
     pinMode(ULTRASONIC_ECHO_PIN_1, INPUT);
 
     // Check AHT20 is alive
     if (!tempSensor.begin()) {
-        Serial.println("Could not find AHT? Check wiring");
+        Serial.println("Could not find AHT :(");
         while (1) {
             delay(10);
         }
@@ -62,11 +84,11 @@ void setup() {
 
     // Check ADXL345 is alive
     if (!accelerometerSensor.begin()) {
-        Serial.println("No ADXL345 sensor detected.");
+        Serial.println("No ADXL345 sensor detected :(");
         while (1);
     }
 
-    // Ultimate GPS Setup
+    // GPS setup
     GPS.begin(9600);
     GPS.sendCommand(PMTK_SET_BAUD_9600 "$PMTK251,9600*17");
     // Uncomment this line to turn on RMC (recommended minimum) and GGA (fix data) including altitude
@@ -98,25 +120,99 @@ void parseCommand(String command) {
     if (command == "<FORWARD>") {
         Serial.println("From dino: moving forward");
         moveForward();
+    } else if (command == "<REVERSE>") {
+        Serial.println("From dino: moving backward");
+        moveBackward();
+    } else if (command == "<RIGHT>") {
+        Serial.println("From dino: turning right");
+        turnRight();
+    } else if (command == "<LEFT>") {
+        Serial.println("From dino: turning left");
+        turnLeft();
+    } else if (command == "<FORWARD_RIGHT>") {
+        Serial.println("From dino: moving forward right");
+        forwardRight();
+    } else if (command == "<FORWARD_LEFT>") {
+        Serial.println("From dino: moving forward left");
+        forwardLeft();
+    } else if (command == "<BACKWARD_RIGHT>") {
+        Serial.println("From dino: moving backward right");
+        backwardRight();
+    } else if (command == "<BACKWARD_LEFT>") {
+        Serial.println("From dino: moving backward left");
+        backwardLeft();
     } else if (command == "<STOP>") {
         Serial.println("From dino: stopping");
         stop();
     } else if (command == "<TELEMETRY>") {
         Serial.println("From dino: getting telemetry");
         getTelemetry();
+    } else if (command == "<HEADLIGHTS_ON>") {
+        Serial.println("From dino: turning headlights on");
+        turnOnHeadlights();
+    } else if (command == "<HEADLIGHTS_OFF>") {
+        Serial.println("From dino: turning headlights off");
+        turnOffHeadlights();
     } else {
         Serial.println("From dino: idk what to do! :(");
     }
 }
 
 void moveForward() {
-    analogWrite(MOTOR_PIN_R, MOTOR_SPEED_GO);
-    analogWrite(MOTOR_PIN_L, MOTOR_SPEED_GO);
+    analogWrite(MOTOR_R_FORWARD_PIN, MOTOR_SPEED_GO);
+    analogWrite(MOTOR_L_FORWARD_PIN, MOTOR_SPEED_GO);
+}
+
+void moveBackward() {
+    analogWrite(MOTOR_R_REVERSE_PIN, MOTOR_SPEED_TURN);
+    analogWrite(MOTOR_L_REVERSE_PIN, MOTOR_SPEED_TURN);
+}
+
+void turnRight() {
+    analogWrite(MOTOR_R_REVERSE_PIN, MOTOR_SPEED_TURN);
+    analogWrite(MOTOR_L_FORWARD_PIN, MOTOR_SPEED_TURN);
+}
+
+void turnLeft() {
+    analogWrite(MOTOR_R_FORWARD_PIN, MOTOR_SPEED_TURN);
+    analogWrite(MOTOR_L_REVERSE_PIN, MOTOR_SPEED_TURN);
+}
+
+void forwardRight() {
+    analogWrite(MOTOR_R_FORWARD_PIN, MOTOR_SPEED_TURN);
+    analogWrite(MOTOR_L_FORWARD_PIN, MOTOR_SPEED_GO);
+}
+
+void forwardLeft() {
+    analogWrite(MOTOR_R_FORWARD_PIN, MOTOR_SPEED_GO);
+    analogWrite(MOTOR_L_FORWARD_PIN, MOTOR_SPEED_TURN);
+}
+
+void backwardRight() {
+    analogWrite(MOTOR_R_REVERSE_PIN, MOTOR_SPEED_GO);
+    analogWrite(MOTOR_L_REVERSE_PIN, MOTOR_SPEED_TURN);
+}
+
+void backwardLeft() {
+    analogWrite(MOTOR_R_REVERSE_PIN, MOTOR_SPEED_TURN);
+    analogWrite(MOTOR_L_REVERSE_PIN, MOTOR_SPEED_GO);
 }
 
 void stop() {
-    analogWrite(MOTOR_PIN_L, MOTOR_SPEED_STOP);
-    analogWrite(MOTOR_PIN_R, MOTOR_SPEED_STOP);
+    analogWrite(MOTOR_R_FORWARD_PIN, MOTOR_SPEED_STOP);
+    analogWrite(MOTOR_L_FORWARD_PIN, MOTOR_SPEED_STOP);
+    analogWrite(MOTOR_R_REVERSE_PIN, MOTOR_SPEED_STOP);
+    analogWrite(MOTOR_L_REVERSE_PIN, MOTOR_SPEED_STOP);
+}
+
+// turn on headlights
+void turnOnHeadlights() {
+    digitalWrite(HEADLIGHTS_PIN, HIGH);
+}
+
+// turn off headlights
+void turnOffHeadlights() {
+    digitalWrite(HEADLIGHTS_PIN, LOW);
 }
 
 // Get all telemetry data
@@ -129,18 +225,17 @@ String getTelemetry() {
 
     getGPS(&gpsSat, &gpsLat, &gpsLong, &gpsFix, &gpsFixQuality);
 
-
     String json = "{\n"
-                  "  'gps': {\n"
-                  "    'quality': " + String(gpsFixQuality) + ",\n"
-                  "    'fix': " + String(gpsFix) + ",\n"
-                  "    'lat': " + String(gpsLat, 6) + ",\n"
-                  "    'long': " + String(gpsLong, 6) + "\n"
+                  "  \"gps\": {\n"
+                  "    \"quality\": " + String(gpsFixQuality) + ",\n"
+                  "    \"fix\": " + String(gpsFix) + ",\n"
+                  "    \"lat\": " + String(gpsLat, 6) + ",\n"
+                  "    \"long\": " + String(gpsLong, 6) + "\n"
                   "  },\n"
-                  "  'accelerometer': '" + getAccel() + "',\n"
-                  "  'temp_c': " + getTemp() + ",\n"
-                  "  'ultrasonic_distances': {\n"
-                  "     'front_l': " + String(ultraSonicDistance()) + "\n"
+                  "  \"accelerometer\": \"" + getAccel() + "\",\n"
+                  "  \"temp_c\": " + getTemp() + ",\n"
+                  "  \"ultrasonic_distances\": {\n"
+                  "     \"front_l\": " + String(ultraSonicDistance()) + "\n"
                   "   }\n"
                   "}";
     Serial.println(json);
@@ -219,9 +314,7 @@ String getAccel() {
 float getTemp() {
     sensors_event_t temp;
     tempSensorPointer->getEvent(&temp);
-
-    //delay(200);
-    //return temperature in degrees C
+    delay(200);
     return temp.temperature;
 }
 
