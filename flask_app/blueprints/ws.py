@@ -32,9 +32,9 @@ def send_telemetry(ws: Sock, controls: bool):
 
 @sock.route('/telemetry')
 def echo(ws):
-    #_thread = threading.Thread(target=send_telemetry, args=(ws, False))
-    #_thread.daemon = True
-    #_thread.start()
+    _thread = threading.Thread(target=send_telemetry, args=(ws, False))
+    _thread.daemon = True
+    _thread.start()
     aev.update_telemetry()
     while True:
         data = ws.receive()
@@ -53,9 +53,9 @@ def control(ws):
     S: backward          2
     D: right             1
     """
-    #_thread = threading.Thread(target=send_telemetry, args=(ws, True))
-    #_thread.daemon = True
-    #_thread.start()
+    _thread = threading.Thread(target=send_telemetry, args=(ws, True))
+    _thread.daemon = True
+    _thread.start()
     while ws.connected:
         data = json.loads(ws.receive())
         print(data)
@@ -82,8 +82,8 @@ def control(ws):
             else:
                 # just forward
                 pass
-            aev.forward()
             print(status)
+            aev.forward()
         elif command == 4:
             # left
             print('TURNING LEFT')
@@ -104,6 +104,6 @@ def control(ws):
                 pass
             print(status)
         else:
-            aev.stop()
             print('received STOPPING')
+            aev.stop()
 

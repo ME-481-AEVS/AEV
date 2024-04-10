@@ -16,9 +16,10 @@ class AEV:
         self.heartbeat = 0
         self.manual_control = False
 
+
     def update_telemetry(self):
-        # update with random values for now
-        print(self.ard_comm.send_command('<TELEMETRY>'))
+        print('getting telem')
+        # print(self.ard_comm.send_command('<TELEMETRY>'))
         self.telemetry = {
             'elec_bay_temp_c': random() * 100,
             'accel_data': random() * 100,
@@ -28,9 +29,9 @@ class AEV:
 
     def forward(self):
         print('sending forward...')
-        print(self.ard_comm.send_command('<FORWARD>'))
+        self.ard_comm.send_command('<FORWARD>')
 
     def stop(self):
         print('sending stop...')
-        print(self.ard_comm.send_command('<STOP>'))
+        self.ard_comm.send_command('<STOP>')
 

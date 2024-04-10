@@ -20,6 +20,7 @@ class ArduinoCommunication:
             print("Could not communicate with arduino.")
             exit(1)
 
+
     def send_command(self, command='0', log=False):
         """
         Send command to arduino and request response
