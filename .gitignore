@@ -3,5 +3,6 @@ __pycache__/
 media/
 log/
 ssl/
+.DS_Store
 *.pyc
 .env

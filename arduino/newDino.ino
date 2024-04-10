@@ -6,13 +6,18 @@
 
 #define GPS_SERIAL Serial3 // set GPS_SERIAL port to 3 (pins 14,15)
 
-const int MOTOR_PIN = 5;
+const int MOTOR_PIN_L = 5;
+const int MOTOR_PIN_R = 6;
 const int MOTOR_SPEED_STOP = 50;
 const int MOTOR_SPEED_GO = 150; // between 0 (stopped) and 255 (full speed)
 const int ULTRASONIC_THRESHOLD = 12; // cm that the ultrasonic sensors will alert
 const int ULTRASONIC_TRIG_PIN_1 = 48;
 const int ULTRASONIC_ECHO_PIN_1 = 50;
 const bool GPS_ECHO = false; // turn off echoing the GPS data to the Serial console
+
+const int T_RELAY_PIN = 35;
+const int R_RELAY_PIN = 37;
+const int E_RELAY_PIN = 39;
 
 // TODO these should be different
 const int TACTILE_BTN_FRONT = 4;
@@ -33,7 +38,12 @@ Adafruit_GPS GPS(&GPS_SERIAL);
 void setup() {
     Serial.begin(115200);
 
-    pinMode(MOTOR_PIN, OUTPUT); // motor pin is an output
+    pinMode(MOTOR_PIN_R, OUTPUT); // motor pin is an output
+    pinMode(MOTOR_PIN_L, OUTPUT); // motor pin is an output
+
+    pinMode(T_RELAY_PIN, OUTPUT);
+    pinMode(R_RELAY_PIN, OUTPUT);
+    pinMode(E_RELAY_PIN, OUTPUT);
 
     // Set ultrasonic module pins mode
     pinMode(ULTRASONIC_TRIG_PIN_1, OUTPUT);
@@ -45,6 +55,15 @@ void setup() {
         while (1) {
             delay(10);
         }
+    }
+
+    tempSensorPointer = tempSensor.getTemperatureSensor();
+    tempSensorPointer->printSensorDetails();
+
+    // Check ADXL345 is alive
+    if (!accelerometerSensor.begin()) {
+        Serial.println("No ADXL345 sensor detected.");
+        while (1);
     }
 
     // Ultimate GPS Setup
@@ -75,6 +94,7 @@ void loop() {
 }
 
 void parseCommand(String command) {
+    Serial.println(command);
     if (command == "<FORWARD>") {
         Serial.println("From dino: moving forward");
         moveForward();
@@ -90,33 +110,41 @@ void parseCommand(String command) {
 }
 
 void moveForward() {
-    analogWrite(MOTOR_PIN, MOTOR_SPEED_GO);
+    analogWrite(MOTOR_PIN_R, MOTOR_SPEED_GO);
+    analogWrite(MOTOR_PIN_L, MOTOR_SPEED_GO);
 }
 
 void stop() {
-    analogWrite(MOTOR_PIN, MOTOR_SPEED_STOP);
+    analogWrite(MOTOR_PIN_L, MOTOR_SPEED_STOP);
+    analogWrite(MOTOR_PIN_R, MOTOR_SPEED_STOP);
 }
 
 // Get all telemetry data
-void getTelemetry() {
+String getTelemetry() {
     int gpsSat;
-    float gpsLat;
-    float gpsLong;
-    int gpsFix;
-    int gpsFixQuality;
+    float gpsLat = 0;
+    float gpsLong = 0;
+    int gpsFix = -1;
+    int gpsFixQuality = -1;
 
     getGPS(&gpsSat, &gpsLat, &gpsLong, &gpsFix, &gpsFixQuality);
-    if (gpsFix == 0){
-        Serial.print("No GPS fix");
-    } else {
-        Serial.println(gpsFix);
-        Serial.print("GPS fix quality: ");
-        Serial.println(gpsFixQuality);
-    }
-    Serial.println();
-    Serial.println(getAccel());
-    Serial.println(getTemp());
-    ultraSonicDistance();
+
+
+    String json = "{\n"
+                  "  'gps': {\n"
+                  "    'quality': " + String(gpsFixQuality) + ",\n"
+                  "    'fix': " + String(gpsFix) + ",\n"
+                  "    'lat': " + String(gpsLat, 6) + ",\n"
+                  "    'long': " + String(gpsLong, 6) + "\n"
+                  "  },\n"
+                  "  'accelerometer': '" + getAccel() + "',\n"
+                  "  'temp_c': " + getTemp() + ",\n"
+                  "  'ultrasonic_distances': {\n"
+                  "     'front_l': " + String(ultraSonicDistance()) + "\n"
+                  "   }\n"
+                  "}";
+    Serial.println(json);
+    return json;
 }
 
 // Receive GPS coordinates
@@ -182,10 +210,8 @@ int readTactileSensor() {
 String getAccel() {
     sensors_event_t event;
     accelerometerSensor.getEvent(&event);
-
-    //delay(200);
-    //return acceleration data X,Y,Z
-    return String(event.acceleration.x)+","+String(event.acceleration.y)+","+String(event.acceleration.z);
+    delay(200);
+    return String("") + event.acceleration.x + ", " + event.acceleration.y + ", " + event.acceleration.z;
 }
 
 
@@ -200,7 +226,7 @@ float getTemp() {
 }
 
 // Get ultrasonic sensor distances
-// returns an array of integers with a length of 4. 0 = no concern 1 = proximity alert utilizing the predefined 'ULTRASONIC_THRESHOLD' definition
+// Just one for now, need to add more later
 int ultraSonicDistance() {
     digitalWrite(ULTRASONIC_TRIG_PIN_1, LOW);
     delayMicroseconds(5);
@@ -210,12 +236,6 @@ int ultraSonicDistance() {
     digitalWrite(ULTRASONIC_TRIG_PIN_1, LOW);
 
     long duration = pulseIn(ULTRASONIC_ECHO_PIN_1, HIGH);
-    long distance = duration * 0.034 / 2; //distance in cm
-    Serial.print("Distance:");
-    Serial.println(distance);
-
-    if (distance < 0.01) {
-        return 1;
-    }
-    return 0;
+    long distance = duration * 0.034 / 2; // distance in cm
+    return distance;
 }

@@ -38,7 +38,7 @@ Adafruit_ADXL345_Unified accelerometerSensor = Adafruit_ADXL345_Unified();
 // Pointer for the temperature sensor
 Adafruit_Sensor *tempSensorPointer;
 
-// Create Servo objects for motor control
+// Create Servo objects for motor control todo remove?
 Servo leftServoMotor;
 Servo rightServoMotor;
 
@@ -255,27 +255,6 @@ void setMotorSpeed(int motor, int speed) {
     }
 }
 
-// Get all telemetry data
-void getTelemetry() {
-    int gpsSat;
-    float gpsLat;
-    float gpsLong;
-    int gpsFix;
-    int gpsFixQuality;
-
-    getGPS(&gpsSat, &gpsLat, &gpsLong, &gpsFix, &gpsFixQuality);
-    if (gpsFix == 0){
-        Serial.print("No GPS fix");
-    } else {
-        Serial.println(gpsFix);
-        Serial.print("GPS fix quality: ");
-        Serial.println(gpsFixQuality);
-    }
-    Serial.println();
-    Serial.println(getAccel());
-    Serial.println(getTemp());
-    ultraSonicDistance();
-}
 
 
 /*
@@ -307,60 +286,3 @@ byte receivedBytes[numBytes];
 byte numReceived = 0;
 
 boolean newData = false;
-
-void recvBytesWithStartEndMarkers() {
-    static boolean recvInProgress = false;
-    static byte ndx = 0;
-    byte startMarker = 0x3C;
-    byte endMarker = 0x3E;
-    byte rb;
-
-    while (Serial.available() > 0 && newData == false) {
-        rb = Serial.read();
-
-        if (recvInProgress) {
-            if (rb != endMarker) {
-                receivedBytes[ndx] = rb;
-                ndx++;
-                if (ndx >= numBytes) {
-                    ndx = numBytes - 1;
-                }
-            } else {
-                receivedBytes[ndx] = '\0'; // terminate the string
-                recvInProgress = false;
-                numReceived = ndx;  // save the number for use when printing
-                ndx = 0;
-                newData = true;
-            }
-            // Check if rb is the byte 0x4C (L)
-            if (rb == 0x4C) {
-                brake(1); // Call the function brake if byte 0x4C is received
-            }
-        } else if (rb == startMarker) {
-            recvInProgress = true;
-        }
-    }
-}
-
-void processReceivedData() {
-    // Check is the received data is at least 3 bytes
-    if (numReceived >= 3) {
-         // Check if the received data has the correct start and end markers
-        if (receivedBytes[0] == '<' && receivedBytes[numReceived] == '>') {
-            // If the received data is contains b (brake)
-            if (receivedBytes[1] == 'b') {
-                // Check value attached to the start marker
-                if (receivedBytes[2] == '1') {
-                    Serial.println("Received <b1>. Performing specific action...");
-                }
-            } else {
-                Serial.println(receivedBytes);
-            }
-        } else {
-            Serial.println("<ERROR>");
-        }
-        newData = false;
-    } else {
-        Serial.println("<ERROR>"); // Print error message if the received data has less than 3 bytes
-    }
-}
