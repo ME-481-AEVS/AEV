@@ -4,7 +4,7 @@ from camera.camera_stream import CameraStream
 
 
 main = Blueprint('main', __name__)
-camera_rear = CameraStream(2)
+camera_rear = CameraStream(0)
 
 
 @main.get('/')
