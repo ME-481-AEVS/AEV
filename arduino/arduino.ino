@@ -23,6 +23,8 @@ const int MOTOR_R_REVERSE_PIN = 37;
 const int ULTRASONIC_TRIG_PIN_1 = 48;
 const int ULTRASONIC_ECHO_PIN_1 = 50;
 const int HEADLIGHTS_PIN = 31;
+const int LINEAR_ACUTATOR_PIN_1 = 27;
+const int LINEAR_ACUTATOR_PIN_2 = 29;
 const int T_RELAY_PIN = 35;
 const int R_RELAY_PIN = 37;
 const int E_RELAY_PIN = 39;
@@ -36,8 +38,8 @@ const int TACTILE_BTN_RIGHT = 4;
 // settings
 const int ULTRASONIC_THRESHOLD = 12; // cm that the ultrasonic sensors will alert
 const int MOTOR_SPEED_STOP = 50;
-const int MOTOR_SPEED_GO = 150; // between 0 (stopped) and 255 (full speed)
-const int MOTOR_SPEED_TURN = 100;
+const int MOTOR_SPEED_GO = 200; // between 0 (stopped) and 255 (full speed)
+const int MOTOR_SPEED_TURN = 150;
 const bool GPS_ECHO = false; // turn off echoing the GPS data to the Serial console
 
 
@@ -64,6 +66,10 @@ void setup() {
 
     // headlights
     pinMode(HEADLIGHTS_PIN, OUTPUT);
+
+    // linear actuators
+    pinMode(LINEAR_ACUTATOR_PIN_1, OUTPUT);
+    pinMode(LINEAR_ACUTATOR_PIN_2, OUTPUT);
 
     // ultrasonics
     pinMode(ULTRASONIC_TRIG_PIN_1, OUTPUT);
@@ -151,6 +157,12 @@ void parseCommand(String command) {
     } else if (command == "<HEADLIGHTS_OFF>") {
         Serial.println("From dino: turning headlights off");
         turnOffHeadlights();
+    } else if (command == "<OPEN>") {
+        Serial.println("From dino: opening door");
+        openDoor();
+    } else if (command == "<CLOSE>") {
+        Serial.println("From dino: closing door");
+        closeDoor();
     } else {
         Serial.println("From dino: idk what to do! :(");
     }
@@ -329,4 +341,22 @@ int ultraSonicDistance() {
     long duration = pulseIn(ULTRASONIC_ECHO_PIN_1, HIGH);
     long distance = duration * 0.034 / 2; // distance in cm
     return distance;
+}
+
+// extend linear actuators
+void openDoor() {
+    digitalWrite(LINEAR_ACUTATOR_PIN_1, LOW);
+    digitalWrite(LINEAR_ACUTATOR_PIN_2, HIGH);
+    delay(12500);
+    digitalWrite(LINEAR_ACUTATOR_PIN_1, LOW);
+    digitalWrite(LINEAR_ACUTATOR_PIN_2, LOW);
+}
+
+// retract linear actuators
+void closeDoor() {
+    digitalWrite(LINEAR_ACUTATOR_PIN_1, HIGH);
+    digitalWrite(LINEAR_ACUTATOR_PIN_2, LOW);
+    delay(12500);
+    digitalWrite(LINEAR_ACUTATOR_PIN_1, LOW);
+    digitalWrite(LINEAR_ACUTATOR_PIN_2, LOW);
 }
