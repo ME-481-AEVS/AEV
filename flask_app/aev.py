@@ -30,9 +30,9 @@ class AEV:
         print('sending forward...')
         self.ard_comm.send_command('<FORWARD>')
 
-    def backward(self):
-        print('sending backward...')
-        self.ard_comm.send_command('<BACKWARD>')
+    def reverse(self):
+        print('sending reverse...')
+        self.ard_comm.send_command('<REVERSE>')
 
     def turn_left(self):
         print('sending left...')
@@ -50,13 +50,13 @@ class AEV:
         print('sending forward right...')
         self.ard_comm.send_command('<FORWARD_RIGHT>')
 
-    def backward_left(self):
-        print('sending backward left...')
-        self.ard_comm.send_command('<BACKWARD_LEFT>')
+    def reverse_left(self):
+        print('sending reverse left...')
+        self.ard_comm.send_command('<REVERSE_LEFT>')
 
-    def backward_right(self):
-        print('sending backward right...')
-        self.ard_comm.send_command('<BACKWARD_RIGHT>')
+    def reverse_right(self):
+        print('sending reverse right...')
+        self.ard_comm.send_command('<REVERSE_RIGHT>')
 
     def stop(self):
         print('sending stop...')

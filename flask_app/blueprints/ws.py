@@ -52,7 +52,7 @@ def control(ws):
     O: open door        16
     W: forward           8
     A: left              4
-    S: backward          2
+    S: reverse           2
     D: right             1
     """
     _thread = threading.Thread(target=send_telemetry, args=(ws, True))
@@ -61,7 +61,6 @@ def control(ws):
     while ws.connected:
         data = json.loads(ws.receive())
         print(data)
-        command = 0
         if data['type'] == 'command':
             command = data['message']
         else:
@@ -104,19 +103,19 @@ def control(ws):
             print('TURNING RIGHT')
             aev.turn_right()
         elif command >= 2:
-            # backward
-            status = 'MOVING BACKWARD'
+            # reverse
+            status = 'REVERSE'
             if command == 6:
                 # left
                 status += ' LEFT'
-                aev.backward_left()
+                aev.reverse_left()
             elif command == 3:
                 # right
                 status += ' RIGHT'
-                aev.backward_right()
+                aev.reverse_right()
             else:
-                # just back
-                aev.backward()
+                # just reverse
+                aev.reverse()
             print(status)
         else:
             print('received STOPPING')

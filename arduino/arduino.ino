@@ -124,9 +124,9 @@ void parseCommand(String command) {
     if (command == "<FORWARD>") {
         Serial.println("From dino: moving forward");
         moveForward();
-    } else if (command == "<BACKWARD>") {
-        Serial.println("From dino: moving backward");
-        moveBackward();
+    } else if (command == "<REVERSE>") {
+        Serial.println("From dino: reversing");
+        reverse();
     } else if (command == "<RIGHT>") {
         Serial.println("From dino: turning right");
         turnRight();
@@ -139,12 +139,12 @@ void parseCommand(String command) {
     } else if (command == "<FORWARD_LEFT>") {
         Serial.println("From dino: moving forward left");
         forwardLeft();
-    } else if (command == "<BACKWARD_RIGHT>") {
-        Serial.println("From dino: moving backward right");
-        backwardRight();
-    } else if (command == "<BACKWARD_LEFT>") {
-        Serial.println("From dino: moving backward left");
-        backwardLeft();
+    } else if (command == "<REVERSE_RIGHT>") {
+        Serial.println("From dino: moving reverse right");
+        reverseRight();
+    } else if (command == "<REVERSE_LEFT>") {
+        Serial.println("From dino: moving reverse left");
+        reverseLeft();
     } else if (command == "<STOP>") {
         Serial.println("From dino: stopping");
         stop();
@@ -173,7 +173,7 @@ void moveForward() {
     analogWrite(MOTOR_L_FORWARD_PIN, MOTOR_SPEED_GO);
 }
 
-void moveBackward() {
+void reverse() {
     analogWrite(MOTOR_R_REVERSE_PIN, MOTOR_SPEED_TURN);
     analogWrite(MOTOR_L_REVERSE_PIN, MOTOR_SPEED_TURN);
 }
@@ -198,12 +198,12 @@ void forwardLeft() {
     analogWrite(MOTOR_L_FORWARD_PIN, MOTOR_SPEED_TURN);
 }
 
-void backwardRight() {
+void reverseRight() {
     analogWrite(MOTOR_R_REVERSE_PIN, MOTOR_SPEED_GO);
     analogWrite(MOTOR_L_REVERSE_PIN, MOTOR_SPEED_TURN);
 }
 
-void backwardLeft() {
+void reverseLeft() {
     analogWrite(MOTOR_R_REVERSE_PIN, MOTOR_SPEED_TURN);
     analogWrite(MOTOR_L_REVERSE_PIN, MOTOR_SPEED_GO);
 }
