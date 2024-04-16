@@ -149,8 +149,7 @@ void parseCommand(String command) {
         Serial.println("From dino: stopping");
         stop();
     } else if (command == "<TELEMETRY>") {
-        Serial.println("From dino: getting telemetry");
-        getTelemetry();
+        Serial.println(getTelemetry());
     } else if (command == "<HEADLIGHTS_ON>") {
         Serial.println("From dino: turning headlights on");
         turnOnHeadlights();
@@ -235,21 +234,19 @@ String getTelemetry() {
 
     getGPS(&gpsSat, &gpsLat, &gpsLong, &gpsFix, &gpsFixQuality);
 
-    String json = "{\n"
-                  "  \"gps\": {\n"
-                  "    \"quality\": " + String(gpsFixQuality) + ",\n"
-                  "    \"fix\": " + String(gpsFix) + ",\n"
-                  "    \"lat\": " + String(gpsLat, 6) + ",\n"
-                  "    \"long\": " + String(gpsLong, 6) + "\n"
-                  "  },\n"
-                  "  \"accelerometer\": \"" + getAccel() + "\",\n"
-                  "  \"temp_c\": " + getTemp() + ",\n"
-                  "  \"ultrasonic_distances\": {\n"
-                  "     \"front_l\": " + String(ultraSonicDistance()) + "\n"
-                  "   }\n"
-                  "}";
-    Serial.println(json);
-    return json;
+    return "{\n"
+           "  \"gps\": {\n"
+           "    \"quality\": " + String(gpsFixQuality) + ",\n"
+           "    \"fix\": " + String(gpsFix) + ",\n"
+           "    \"lat\": " + String(gpsLat, 6) + ",\n"
+           "    \"long\": " + String(gpsLong, 6) + "\n"
+           "  },\n"
+           "  \"accelerometer\": \"" + getAccel() + "\",\n"
+           "  \"temp_c\": " + getTemp() + ",\n"
+           "  \"ultrasonic_distances\": {\n"
+           "     \"front_l\": " + String(ultraSonicDistance()) + "\n"
+           "   }\n"
+           "}";
 }
 
 // Receive GPS coordinates

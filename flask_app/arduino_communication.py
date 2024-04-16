@@ -1,54 +1,47 @@
-"""
-Purpose: This class is used to communicate with the Arduino using the serial port.
-The program sends a command to the Arduino and then waits for a response.
-Authors: Owen Bramley, Christian Komo, Rob Godfrey
-"""
-
+import threading
 from serial import Serial
 
 BAUD_RATE = 115200
 PORT = '/dev/ttyACM0'
-# LOGFILE = f'logs/datalog{str(time.time())}.txt'
 
 
 class ArduinoCommunication:
+    """
+    Class to communicate with arduino. Sends commands and reads responses.
+    """
     def __init__(self):
         try:
             self.serial_comm = Serial(PORT, BAUD_RATE)
             self.serial_comm.timeout = 1
+            threading.Thread(target=self.read_response).start()
         except:
             print("Could not communicate with arduino.")
             exit(1)
 
-
-    def send_command(self, command='0', log=False):
+    def send_command(self, command: str):
         """
         Send command to arduino and request response
         :param command: takes command in "<>" form
-        :param log: log data on/off
         """
-        i = command.strip()
-        if i == '0':
+        if command is None or command[0] != '<':
             return "Invalid command"
-        self.serial_comm.write((i + '\n').encode())
-        """
-        # read the response from the Arduino
-        try:
-            if (log):
-                # log data received from the Arduino if log is True
-                # file = open(LOGFILE, "w")
-                # file.write(self.serial_comm.readline().decode('ascii'))
-                pass
+        command = command.strip()
+        self.serial_comm.write((command + '\n').encode())
 
-            print(self.serial_comm.readline().decode('ascii'))
-        except:
-            file = open(LOGFILE, "a")
-            file.write("Error")  # caught errors added to log
+    def read_response(self):
         """
+        Reads response from arduino.
+        """
+        print('Waiting for input from arduino...')
+        try:
+            while True:
+                print(self.serial_comm.readline().decode())
+        finally:
+            self.__del__()
 
     def __del__(self):
         """
-        Close the serial port on program exit
+        Closes the serial port on program exit.
         """
         self.serial_comm.close()
         print('Serial port closed')
