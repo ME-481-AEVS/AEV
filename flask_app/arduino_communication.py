@@ -35,7 +35,9 @@ class ArduinoCommunication:
         print('Waiting for input from arduino...')
         try:
             while True:
-                print(self.serial_comm.readline().decode())
+                arduino_response = self.serial_comm.readline()
+                if arduino_response:
+                    print(arduino_response.decode())
         finally:
             self.__del__()
 
