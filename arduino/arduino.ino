@@ -344,7 +344,7 @@ float getTemp() {
 
 // Get ultrasonic sensor distances
 String getUltrasonicDistance() {
-    int[] echoPins = {
+    int echoPins[] = {
         ULTRASONIC_1_ECHO_PIN,
         ULTRASONIC_2_ECHO_PIN,
         ULTRASONIC_3_ECHO_PIN,
@@ -352,7 +352,7 @@ String getUltrasonicDistance() {
         ULTRASONIC_5_ECHO_PIN,
         ULTRASONIC_6_ECHO_PIN
     };
-    int[] trigPins = {
+    int trigPins[] = {
         ULTRASONIC_1_TRIG_PIN,
         ULTRASONIC_2_TRIG_PIN,
         ULTRASONIC_3_TRIG_PIN,
@@ -360,8 +360,8 @@ String getUltrasonicDistance() {
         ULTRASONIC_5_TRIG_PIN,
         ULTRASONIC_6_TRIG_PIN
     };
-    long[] distances = new long[6];
-    for (int i = 0; i < echoPins.length; i++) {
+    long distances[6] = {};
+    for (int i = 0; i < 6; i++) {
         digitalWrite(trigPins[i], LOW);
         delayMicroseconds(5);
         digitalWrite(trigPins[i], HIGH);
