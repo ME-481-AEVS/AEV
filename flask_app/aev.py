@@ -63,8 +63,9 @@ class AEV:
         """
         Closes the serial port on program exit.
         """
-        self.serial_comm.close()
-        print('Serial port closed')
+        if self.serial_comm:
+            self.serial_comm.close()
+            print('Serial port closed')
 
     def telemetry_json(self):
         return {
