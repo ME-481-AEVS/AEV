@@ -12,30 +12,30 @@ def index():
 
 
 @main.get('/rear-camera')
-def rear():
+def rear_camera():
     return Response(CameraStream(0).generate(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 @main.get('/front-camera')
-def front():
+def front_camera():
     return Response(CameraStream(1).generate(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 @main.get('/left-camera')
-def front():
+def left_camera():
     return Response(CameraStream(2).generate(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 @main.get('/right-camera')
-def front():
+def right_camera():
     return Response(CameraStream(3).generate(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 @main.get('/misc-camera')
-def front():
+def misc_camera():
     return Response(CameraStream(4).generate(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 @main.get('/misc-camera2')
-def front():
+def misc_camera_2():
     return Response(CameraStream(5).generate(), mimetype='multipart/x-mixed-replace; boundary=frame')
