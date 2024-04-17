@@ -81,8 +81,18 @@ void setup() {
     pinMode(LINEAR_ACUTATOR_PIN_2, OUTPUT);
 
     // ultrasonics
-    pinMode(ULTRASONIC_TRIG_PIN_1, OUTPUT);
-    pinMode(ULTRASONIC_ECHO_PIN_1, INPUT);
+    pinMode(ULTRASONIC_1_TRIG_PIN, OUTPUT);
+    pinMode(ULTRASONIC_1_ECHO_PIN, INPUT);
+    pinMode(ULTRASONIC_2_TRIG_PIN, OUTPUT);
+    pinMode(ULTRASONIC_2_ECHO_PIN, INPUT);
+    pinMode(ULTRASONIC_3_TRIG_PIN, OUTPUT);
+    pinMode(ULTRASONIC_3_ECHO_PIN, INPUT);
+    pinMode(ULTRASONIC_4_TRIG_PIN, OUTPUT);
+    pinMode(ULTRASONIC_4_ECHO_PIN, INPUT);
+    pinMode(ULTRASONIC_5_TRIG_PIN, OUTPUT);
+    pinMode(ULTRASONIC_5_ECHO_PIN, INPUT);
+    pinMode(ULTRASONIC_6_TRIG_PIN, OUTPUT);
+    pinMode(ULTRASONIC_6_ECHO_PIN, INPUT);
 
     // Check AHT20 is alive
     if (!tempSensor.begin()) {
@@ -252,7 +262,7 @@ String getTelemetry() {
            "  },\n"
            "  \"accelerometer\": \"" + getAccel() + "\",\n"
            "  \"temp_c\": " + getTemp() + ",\n"
-           "  \"ultrasonic_distances_cm\": " + String(ultraSonicDistance()) + ",\n"
+           "  \"ultrasonic_distances_cm\": " + getUltrasonicDistance() + ",\n"
            "}";
 }
 
@@ -333,7 +343,7 @@ float getTemp() {
 }
 
 // Get ultrasonic sensor distances
-String ultraSonicDistance() {
+String getUltrasonicDistance() {
     int[] echoPins = {
         ULTRASONIC_1_ECHO_PIN,
         ULTRASONIC_2_ECHO_PIN,
