@@ -21,7 +21,7 @@ def send_telemetry(ws: Sock, controls: bool):
         time.sleep(1 if controls else 2)
         aev.update_telemetry()
         try:
-            ws.send(aev.telemetry)
+            ws.send(aev.telemetry_json())
         except ConnectionClosed:
             if controls:
                 # stop all movement on aev

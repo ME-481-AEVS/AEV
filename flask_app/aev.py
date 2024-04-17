@@ -66,6 +66,17 @@ class AEV:
         self.serial_comm.close()
         print('Serial port closed')
 
+    def telemetry_json(self):
+        return {
+            'gps': self.gps,
+            'accelerometer': self.accelerometer,
+            'temp_c': self.temp_c,
+            'ultrasonic_distance_cm': self.ultrasonic_distance_cm,
+            'current_speed_mph': self.current_speed_mph,
+            'door_status': self.door_status,
+            'manual_control': self.manual_control,
+        }
+
     def update_telemetry(self):
         print('getting telem')
         self.send_command('<TELEMETRY>')
