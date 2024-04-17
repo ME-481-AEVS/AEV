@@ -1,9 +1,8 @@
 /*
  * TODOS:
- *  - Add the rest of the ultrasonic sensors - update fn to take in a pin (?) and return distance
  *  - Add tactile sensor fn
  *  - Add brake fn (confirm pin 25? other pin?)
- *  - Add linear actuators fn (implement stop?)
+ *  - Add linear actuators stop?
  *  - Confirm motor pins (L/R, forward/back should match)
  *  - Double check turn logic..
  */
@@ -20,8 +19,18 @@ const int MOTOR_L_FORWARD_PIN = 5;
 const int MOTOR_R_FORWARD_PIN = 6;
 const int MOTOR_L_REVERSE_PIN = 35;
 const int MOTOR_R_REVERSE_PIN = 37;
-const int ULTRASONIC_TRIG_PIN_1 = 48;
-const int ULTRASONIC_ECHO_PIN_1 = 50;
+const int ULTRASONIC_1_ECHO_PIN = 52;
+const int ULTRASONIC_1_TRIG_PIN = 53;
+const int ULTRASONIC_2_ECHO_PIN = 50;
+const int ULTRASONIC_2_TRIG_PIN = 51;
+const int ULTRASONIC_3_ECHO_PIN = 48;
+const int ULTRASONIC_3_TRIG_PIN = 49;
+const int ULTRASONIC_4_ECHO_PIN = 46;
+const int ULTRASONIC_4_TRIG_PIN = 47;
+const int ULTRASONIC_5_ECHO_PIN = 44;
+const int ULTRASONIC_5_TRIG_PIN = 45;
+const int ULTRASONIC_6_ECHO_PIN = 42;
+const int ULTRASONIC_6_TRIG_PIN = 43;
 const int HEADLIGHTS_PIN = 31;
 const int LINEAR_ACUTATOR_PIN_1 = 27;
 const int LINEAR_ACUTATOR_PIN_2 = 29;
@@ -243,9 +252,7 @@ String getTelemetry() {
            "  },\n"
            "  \"accelerometer\": \"" + getAccel() + "\",\n"
            "  \"temp_c\": " + getTemp() + ",\n"
-           "  \"ultrasonic_distances\": {\n"
-           "     \"front_l\": " + String(ultraSonicDistance()) + "\n"
-           "   }\n"
+           "  \"ultrasonic_distances_cm\": " + String(ultraSonicDistance()) + ",\n"
            "}";
 }
 
@@ -326,18 +333,40 @@ float getTemp() {
 }
 
 // Get ultrasonic sensor distances
-// Just one for now, need to add more later
-int ultraSonicDistance() {
-    digitalWrite(ULTRASONIC_TRIG_PIN_1, LOW);
-    delayMicroseconds(5);
-
-    digitalWrite(ULTRASONIC_TRIG_PIN_1, HIGH);
-    delayMicroseconds(10);
-    digitalWrite(ULTRASONIC_TRIG_PIN_1, LOW);
-
-    long duration = pulseIn(ULTRASONIC_ECHO_PIN_1, HIGH);
-    long distance = duration * 0.034 / 2; // distance in cm
-    return distance;
+String ultraSonicDistance() {
+    int[] echoPins = {
+        ULTRASONIC_1_ECHO_PIN,
+        ULTRASONIC_2_ECHO_PIN,
+        ULTRASONIC_3_ECHO_PIN,
+        ULTRASONIC_4_ECHO_PIN,
+        ULTRASONIC_5_ECHO_PIN,
+        ULTRASONIC_6_ECHO_PIN
+    };
+    int[] trigPins = {
+        ULTRASONIC_1_TRIG_PIN,
+        ULTRASONIC_2_TRIG_PIN,
+        ULTRASONIC_3_TRIG_PIN,
+        ULTRASONIC_4_TRIG_PIN,
+        ULTRASONIC_5_TRIG_PIN,
+        ULTRASONIC_6_TRIG_PIN
+    };
+    long[] distances = new long[6];
+    for (int i = 0; i < echoPins.length; i++) {
+        digitalWrite(trigPins[i], LOW);
+        delayMicroseconds(5);
+        digitalWrite(trigPins[i], HIGH);
+        delayMicroseconds(10);
+        digitalWrite(trigPins[i], LOW);
+        distances[i] = pulseIn(echoPins[i], HIGH) * 0.034 / 2; // distance in cm
+    }
+    return "{\n"
+           "  \"us_1\": " + String(distances[0]) + ",\n"
+           "  \"us_2\": " + String(distances[1]) + ",\n"
+           "  \"us_3\": " + String(distances[2]) + ",\n"
+           "  \"us_4\": " + String(distances[3]) + ",\n"
+           "  \"us_5\": " + String(distances[4]) + ",\n"
+           "  \"us_6\": " + String(distances[5]) + "\n"
+           "}";
 }
 
 // extend linear actuators
