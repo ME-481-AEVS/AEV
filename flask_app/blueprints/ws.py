@@ -20,7 +20,6 @@ def send_telemetry(ws: Sock, controls: bool):
     while True:
         time.sleep(1 if controls else 2)
         aev.update_telemetry()
-        print(aev.telemetry)
         try:
             ws.send(aev.telemetry)
         except ConnectionClosed:
