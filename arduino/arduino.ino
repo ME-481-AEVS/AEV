@@ -1,9 +1,28 @@
 /*
+ * =====================
+ *        COMMANDS
+ * =====================
+ * <FORWARD>
+ * <REVERSE>
+ * <RIGHT> (turn right)
+ * <LEFT> (turn left)
+ * <FORWARD_RIGHT>
+ * <FORWARD_LEFT>
+ * <REVERSE_RIGHT>
+ * <REVERSE_LEFT>
+ * <STOP>
+ * <TELEMETRY>
+ * <OPEN> (open door)
+ * <CLOSE> (close door)
+ * <HEADLIGHTS_ON>
+ * <HEADLIGHTS_OFF>
+ */
+
+/*
  * TODOS:
  *  - Add tactile sensor fn
  *  - Add brake fn (confirm pin 25? other pin?)
  *  - Add linear actuators stop?
- *  - Confirm motor pins (L/R, forward/back should match)
  *  - Double check turn logic..
  */
 
@@ -15,8 +34,8 @@
 
 // define pins
 #define GPS_SERIAL Serial3 // set GPS_SERIAL port to 3 (pins 14,15)
-const int MOTOR_L_FORWARD_PIN = 5;
-const int MOTOR_R_FORWARD_PIN = 6;
+const int MOTOR_R_GO_PIN = 5;
+const int MOTOR_L_GO_PIN = 6;
 const int MOTOR_L_REVERSE_PIN = 35;
 const int MOTOR_R_REVERSE_PIN = 37;
 const int ULTRASONIC_1_ECHO_PIN = 52;
@@ -47,8 +66,8 @@ const int TACTILE_BTN_RIGHT = 4;
 // settings
 const int ULTRASONIC_THRESHOLD = 12; // cm that the ultrasonic sensors will alert
 const int MOTOR_SPEED_STOP = 50;
-const int MOTOR_SPEED_GO = 200; // between 0 (stopped) and 255 (full speed)
-const int MOTOR_SPEED_TURN = 150;
+const int MOTOR_SPEED_GO = 100; // between 0 (stopped) and 255 (full speed)
+const int MOTOR_SPEED_TURN = 100;
 const bool GPS_ECHO = false; // turn off echoing the GPS data to the Serial console
 
 
@@ -70,8 +89,10 @@ void setup() {
     pinMode(E_RELAY_PIN, OUTPUT);
 
     // motor pins
-    pinMode(MOTOR_R_FORWARD_PIN, OUTPUT);
-    pinMode(MOTOR_L_FORWARD_PIN, OUTPUT);
+    pinMode(MOTOR_R_GO_PIN, OUTPUT);
+    pinMode(MOTOR_L_GO_PIN, OUTPUT);
+    pinMode(MOTOR_L_REVERSE_PIN, OUTPUT);
+    pinMode(MOTOR_R_REVERSE_PIN, OUTPUT);
 
     // headlights
     pinMode(HEADLIGHTS_PIN, OUTPUT);
@@ -187,33 +208,35 @@ void parseCommand(String command) {
 }
 
 void moveForward() {
-    analogWrite(MOTOR_R_FORWARD_PIN, MOTOR_SPEED_GO);
-    analogWrite(MOTOR_L_FORWARD_PIN, MOTOR_SPEED_GO);
+    // digitalWrite(MOTOR_R_REVERSE_PIN, HIGH);
+    // digitalWrite(MOTOR_L_REVERSE_PIN, HIGH);
+    analogWrite(MOTOR_R_GO_PIN, MOTOR_SPEED_GO);
+    analogWrite(MOTOR_L_GO_PIN, MOTOR_SPEED_GO);
 }
 
 void reverse() {
-    analogWrite(MOTOR_R_REVERSE_PIN, MOTOR_SPEED_TURN);
-    analogWrite(MOTOR_L_REVERSE_PIN, MOTOR_SPEED_TURN);
+    analogWrite(MOTOR_R_GO_PIN, MOTOR_SPEED_GO);
+    analogWrite(MOTOR_L_GO_PIN, MOTOR_SPEED_GO);
 }
 
 void turnRight() {
     analogWrite(MOTOR_R_REVERSE_PIN, MOTOR_SPEED_TURN);
-    analogWrite(MOTOR_L_FORWARD_PIN, MOTOR_SPEED_TURN);
+    analogWrite(MOTOR_L_GO_PIN, MOTOR_SPEED_TURN);
 }
 
 void turnLeft() {
-    analogWrite(MOTOR_R_FORWARD_PIN, MOTOR_SPEED_TURN);
+    analogWrite(MOTOR_R_GO_PIN, MOTOR_SPEED_TURN);
     analogWrite(MOTOR_L_REVERSE_PIN, MOTOR_SPEED_TURN);
 }
 
 void forwardRight() {
-    analogWrite(MOTOR_R_FORWARD_PIN, MOTOR_SPEED_TURN);
-    analogWrite(MOTOR_L_FORWARD_PIN, MOTOR_SPEED_GO);
+    analogWrite(MOTOR_R_GO_PIN, MOTOR_SPEED_TURN);
+    analogWrite(MOTOR_L_GO_PIN, MOTOR_SPEED_GO);
 }
 
 void forwardLeft() {
-    analogWrite(MOTOR_R_FORWARD_PIN, MOTOR_SPEED_GO);
-    analogWrite(MOTOR_L_FORWARD_PIN, MOTOR_SPEED_TURN);
+    analogWrite(MOTOR_R_GO_PIN, MOTOR_SPEED_GO);
+    analogWrite(MOTOR_L_GO_PIN, MOTOR_SPEED_TURN);
 }
 
 void reverseRight() {
@@ -227,8 +250,8 @@ void reverseLeft() {
 }
 
 void stop() {
-    analogWrite(MOTOR_R_FORWARD_PIN, MOTOR_SPEED_STOP);
-    analogWrite(MOTOR_L_FORWARD_PIN, MOTOR_SPEED_STOP);
+    analogWrite(MOTOR_R_GO_PIN, MOTOR_SPEED_STOP);
+    analogWrite(MOTOR_L_GO_PIN, MOTOR_SPEED_STOP);
     analogWrite(MOTOR_R_REVERSE_PIN, MOTOR_SPEED_STOP);
     analogWrite(MOTOR_L_REVERSE_PIN, MOTOR_SPEED_STOP);
 }
