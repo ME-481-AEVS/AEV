@@ -153,7 +153,7 @@ void setup() {
 }
 
 void loop() {
-    if (Serial.available() > 0) {
+    if (readTactileSensor() == 0 && Serial.available() > 0) {
         String command = Serial.readStringUntil('\n'); // Read data until newline character
         parseCommand(command);
     }
