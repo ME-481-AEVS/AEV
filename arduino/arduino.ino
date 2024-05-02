@@ -16,14 +16,17 @@
  * <CLOSE> (close door)
  * <HEADLIGHTS_ON>
  * <HEADLIGHTS_OFF>
+ * <WL SOLID> (warning light solid)
+ * <WL FLASH> (warning light flashing)
+ * <WL OFF> (warning light off)
  */
 
 /*
  * TODOS:
- *  - Add tactile sensor fn
  *  - Add brake fn (confirm pin 25? other pin?)
  *  - Add linear actuators stop?
- *  - Double check turn logic..
+ *  - Double check turn logic
+ *  - Ramp acceleration
  */
 
 #include <Wire.h>
@@ -38,6 +41,7 @@ const int MOTOR_R_GO_PIN = 5;
 const int MOTOR_L_GO_PIN = 6;
 const int MOTOR_L_REVERSE_PIN = 35;
 const int MOTOR_R_REVERSE_PIN = 37;
+const int WARNING_LIGHT_PIN = 39;
 const int ULTRASONIC_1_ECHO_PIN = 52;
 const int ULTRASONIC_1_TRIG_PIN = 53;
 const int ULTRASONIC_2_ECHO_PIN = 50;
@@ -59,9 +63,6 @@ const int E_RELAY_PIN = 39;
 
 // TODO update
 const int TACTILE_BTN_FRONT = 4;
-const int TACTILE_BTN_BACK = 4;
-const int TACTILE_BTN_LEFT = 4;
-const int TACTILE_BTN_RIGHT = 4;
 
 // settings
 const int ULTRASONIC_THRESHOLD = 12; // cm that the ultrasonic sensors will alert
@@ -70,7 +71,7 @@ const int MOTOR_SPEED_GO = 100; // between 0 (stopped) and 255 (full speed)
 const int MOTOR_SPEED_TURN = 100;
 const bool GPS_ECHO = false; // turn off echoing the GPS data to the Serial console
 
-
+int warningLightState = 0; // 0 = off, 1 = solid, 2 = flashing
 // Initialize the AHT20 sensor
 Adafruit_AHTX0 tempSensor;
 // Initialize the ADXL345 sensor
@@ -94,8 +95,14 @@ void setup() {
     pinMode(MOTOR_L_REVERSE_PIN, OUTPUT);
     pinMode(MOTOR_R_REVERSE_PIN, OUTPUT);
 
+    // tactile sensor
+    pinMode(TACTILE_BTN_FRONT, INPUT); // todo double check
+
     // headlights
     pinMode(HEADLIGHTS_PIN, OUTPUT);
+
+    // warning light
+    pinMode(WARNING_LIGHT_PIN, OUTPUT);
 
     // linear actuators
     pinMode(LINEAR_ACUTATOR_PIN_1, OUTPUT);
@@ -156,8 +163,7 @@ void loop() {
     if (readTactileSensor() == 0 && Serial.available() > 0) {
         String command = Serial.readStringUntil('\n'); // Read data until newline character
         parseCommand(command);
-    }
-    else {
+    } else {
         stop();
     }
 }
@@ -205,6 +211,15 @@ void parseCommand(String command) {
     } else if (command == "<CLOSE>") {
         Serial.println("From dino: closing door");
         closeDoor();
+    } else if (command == "<WL SOLID>") {
+       Serial.println("From dino: Warning lights solid");
+       warningLightSolid();
+    } else if (command == "<WL FLASH>") {
+       Serial.println("From dino: Warning lights flashing");
+       warningLightFlash();
+    } else if (command == "<WL OFF>") {
+       Serial.println("From dino: Warning lights off");
+       warningLightOff();
     } else {
         Serial.println("From dino: idk what to do! :(");
     }
@@ -328,24 +343,12 @@ void getGPS(int *satellites, float *latitude, float *longitude, int *fix, int *f
 }
 
 
-// Read the tactile sensors and return area of concern
+// Read the tactile sensor
 int readTactileSensor() {
-    byte front = digitalRead(TACTILE_BTN_FRONT); // 1 = front
-    byte back = digitalRead(TACTILE_BTN_BACK);   // 2 = back
-    byte left = digitalRead(TACTILE_BTN_LEFT);   // 3 = left
-    byte right = digitalRead(TACTILE_BTN_RIGHT); // 4 = right
+    byte front = digitalRead(TACTILE_BTN_FRONT);
 
     if (front == LOW) {
         return 1;
-    }
-    if (back == LOW) {
-        return 2;
-    }
-    if (left == LOW) {
-        return 3;
-    }
-    if (right == LOW) {
-        return 4;
     }
     return 0;
 }
@@ -421,4 +424,61 @@ void closeDoor() {
     delay(12500);
     digitalWrite(LINEAR_ACUTATOR_PIN_1, LOW);
     digitalWrite(LINEAR_ACUTATOR_PIN_2, LOW);
+}
+
+void warningLightSolid() {
+    if (warningLightState == 0) {
+        // lights are off, press the button once
+        digitalWrite(amberPin, HIGH);
+        delay(50);
+        digitalWrite(amberPin, LOW);
+    } else if (warningLightState == 2) {
+        // lights are flashing, press the button twice
+        digitalWrite(amberPin, HIGH);
+        delay(50);
+        digitalWrite(amberPin, LOW);
+        delay(50);
+        digitalWrite(amberPin, HIGH);
+        delay(50);
+        digitalWrite(amberPin, LOW);
+    }
+    warningLightState = 1;
+}
+
+void warningLightFlash() {
+    if (warningLightState == 0) {
+        // lights are off, press the button twice
+        digitalWrite(amberPin, HIGH);
+        delay(50);
+        digitalWrite(amberPin, LOW);
+        delay(50);
+        digitalWrite(amberPin, HIGH);
+        delay(50);
+        digitalWrite(amberPin, LOW);
+    } else if (warningLightState == 1) {
+        // lights are solid, press the button once
+        digitalWrite(amberPin, HIGH);
+        delay(50);
+        digitalWrite(amberPin, LOW);
+    }
+    warningLightState = 2;
+}
+
+void warningLightOff() {
+    if (warningLightState == 1) {
+        // lights are solid, press the button twice
+        digitalWrite(amberPin, HIGH);
+        delay(50);
+        digitalWrite(amberPin, LOW);
+        delay(50);
+        digitalWrite(amberPin, HIGH);
+        delay(50);
+        digitalWrite(amberPin, LOW);
+    } else if (warningLightState == 2) {
+        // lights are flashing, press the button once
+        digitalWrite(amberPin, HIGH);
+        delay(50);
+        digitalWrite(amberPin, LOW);
+    }
+    warningLightState = 0;
 }
